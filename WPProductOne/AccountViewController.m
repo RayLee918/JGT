@@ -447,20 +447,29 @@
                     [alert addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                         // 返回登录界面
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            NSLog(@"登录成功 - -%@", [responseObject objectForKey:@"data"]);
+//                            NSLog(@"登录成功 - -%@", [responseObject objectForKey:@"data"]);
                             _userInfo = [NSDictionary dictionaryWithDictionary:[responseObject objectForKey:kData]];
                             
+                            NSDictionary * dic = [responseObject objectForKey:@"data"];
+                            _userInfo = @{kToken:dic[kToken],
+                                          kHeadPic:dic[kUser][kHeadPic],
+                                          kNickName:dic[kUser][kNickName],
+                                          kPhone:dic[kUser][kPhone],
+                                          kSubscriptionNum:dic[kSubscriptionNum],
+                                          KAttentionNum:dic[KAttentionNum],
+                                          };
+                            
                             // 保存到本地
-                            NSData * data = [NSKeyedArchiver archivedDataWithRootObject:[responseObject objectForKey:kData]];
-                            [[NSUserDefaults standardUserDefaults] setValue:data forKey:kUser];
-                            [[NSUserDefaults standardUserDefaults] setValue:_userInfo[kToken] forKey:kToken];
-                            NSLog(@"%@", [[NSUserDefaults standardUserDefaults] valueForKey:kToken]);
-
+//                            NSData * data = [NSKeyedArchiver archivedDataWithRootObject:[responseObject objectForKey:kData]];
+                            [[NSUserDefaults standardUserDefaults] setValue:_userInfo forKey:kUser];
+                            NSLog(@"account - token - %@", [[NSUserDefaults standardUserDefaults] valueForKey:kToken]);
+                            NSLog(@"account - %@", _userInfo);
+                            
                             // 清空登录信息
                             _nameTF.text = @"";
                             _pwdTF.text = @"";
                             
-                            // 获取个人信息
+                            // 设置个人信息
                             [self setPersonInfo:[responseObject objectForKey:@"data"]];
                             [_tableView reloadData];
                             _settingBtn.hidden = NO;
@@ -521,6 +530,69 @@
 #pragma mark - 快速登录操作
 - (void)fastLoginBtnClick:(UIButton *)sender {
     NSLog(@"fastLoginBtnClick");
+    [self getUserInfoFromQQ];
+}
+
+
+#pragma mark - QQ快速登录
+- (void)getUserInfoFromQQ
+{
+    [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_QQ currentViewController:self completion:^(id result, NSError *error) {
+        
+        UMSocialUserInfoResponse *resp = result;
+        if (error) {
+            
+        }
+        else {
+            
+            // 授权成功, 向服务器发送数据
+            NSDictionary * params = @{kNickName:resp.name, kPassword:@"", kToken:@"", kMac:[[NSUserDefaults standardUserDefaults] valueForKey:@"device"], kPhone:@"", kHeadPic:resp.iconurl, kIsLecturer:@"0", @"uid":resp.uid};
+            NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/thirdLogin", kJGT];
+        
+            AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+            [manager GET:urlStr parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                if ([[responseObject objectForKey:@"status"] integerValue] == -1 || [[responseObject objectForKey:@"status"] integerValue] == 500) {
+                    [self showAlert:[responseObject objectForKey:kMsg]];
+                } else {
+                    
+                    // 向服务器发送数据成功, 将信息缓存到本地
+                    if ([[responseObject objectForKey:@"status"] integerValue] == 10) {
+                        
+                        _isTeacher = NO;
+                    } else if ([[responseObject objectForKey:@"status"] integerValue] == 11) {
+                        _isTeacher = YES;
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        // 清空登录信息
+                        _nameTF.text = @"";
+                        _pwdTF.text = @"";
+                        
+                        NSDictionary * dic = [responseObject objectForKey:kData];
+                        
+                        _userInfo = @{kToken:dic[kToken],
+                                      kHeadPic:dic[kUser][kHeadPic],
+                                      kNickName:dic[kUser][kNickName],
+                                      kPhone:dic[kUser][kPhone],
+                                      kSubscriptionNum:dic[kSubscriptionNum],
+                                      KAttentionNum:dic[KAttentionNum],
+                                      };
+                        
+                        // 存储到本地
+                        [[NSUserDefaults standardUserDefaults] setValue:_userInfo forKey:kUser];
+                        
+                        // 更新界面
+                        [_tableView reloadData];
+                        _settingBtn.hidden = NO;
+                        
+                        [self.view sendSubviewToBack:_loginView];
+                    });
+                }
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                
+            }];
+        }
+    }];
 }
 
 #pragma mark - 订阅
@@ -564,14 +636,14 @@
     [self.view bringSubviewToFront:_loginView];
     _settingBtn.hidden = YES;
     
-    NSString * token = [[NSUserDefaults standardUserDefaults] valueForKey:kToken];
-    [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"%@/regOrLog/logout", kJGT] parameters:@{@"token":token} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    NSDictionary * dic = [[NSUserDefaults standardUserDefaults] valueForKey:kUser];
+    [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"%@/regOrLog/logout", kJGT] parameters:@{@"token":dic[kToken]} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"logout - %@", responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"endEdit --- %@", error);
     }];
     
-    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kToken];
+    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kUser];
 }
 
 #pragma mark - tableView

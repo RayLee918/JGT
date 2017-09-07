@@ -78,11 +78,13 @@
 // 字体颜色
 #define kTextColor [UIColor colorWithRed:(((0x1F1F1F & 0xFF0000) >> 16))/255.0 green:(((0x1F1F1F &0xFF00) >>8))/255.0 blue:((0x1F1F1F &0xFF))/255.0 alpha:1.0]
 
-#define kJGT @"http://192.168.1.178:8080/jgt"
-#define kJGTGetImage @"http://192.168.1.178:8080/jgt/downLoad/img?objKey="
+#define kJGT @"http://192.168.1.131:8080/jgt"
+#define kJGTGetImage @"http://192.168.1.131:8080/jgt/downLoad/img?objKey="
 #define kUShareAppkey @"59af5e3365b6d646df000ad9"
+
 #define kAppKeyQQ @"1106400164"
-#define kAppSeceretQQ @"Z2wf5sItzefKSNYM"
+#define kAppKeyWeiXin @"wxf72be7ab7530ee51"
+#define kAppSecretWeiXin @"d9b08bff075f8edd9eedc854cc629a30"
 
 // 用到的key
 #define kUser @"user"
@@ -90,8 +92,15 @@
 #define kData @"data"
 #define kStatus @"status"
 
+#define kHeadPic @"headPic"
+#define kNickName @"nickName"
+#define kPassword @"password"
+#define kPhone @"phone"
+#define kUserID @"userId"
 #define KAttentionNum @"attentionNum"
 #define kSubscriptionNum @"subscriptionNum"
+#define kMac @"mac"
+#define kIsLecturer @"isLecturer"
 
 // NSUserDefaults
 #define kToken  @"token"

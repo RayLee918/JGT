@@ -103,21 +103,14 @@
     });
 }
 
+// 在需要进行获取登录信息的UIViewController中加入如下代码
 - (void)getUserInfoForPlatform:(UMSocialPlatformType)platformType
 {
-    [[UMSocialManager defaultManager] cancelAuthWithPlatform:UMSocialPlatformType_QQ completion:^(id result, NSError *error) {
-        NSLog(@"getuser - %@", result);
-    }];
-    
-    [[UMSocialManager defaultManager] authWithPlatform:platformType currentViewController:self completion:^(id result, NSError *error) {
-        
-    }];
-    
     [[UMSocialManager defaultManager] getUserInfoWithPlatform:platformType currentViewController:self completion:^(id result, NSError *error) {
         
         UMSocialUserInfoResponse *resp = result;
-        // 第三方登录数据(为空表示平台未提供)
         
+        // 第三方登录数据(为空表示平台未提供)
         // 授权数据
         NSLog(@" uid: %@", resp.uid);
         NSLog(@" openid: %@", resp.openid);
@@ -128,11 +121,10 @@
         // 用户数据
         NSLog(@" name: %@", resp.name);
         NSLog(@" iconurl: %@", resp.iconurl);
-        NSLog(@" gender: %@", resp.gender);
+        NSLog(@" gender: %@", resp.unionGender);
         
         // 第三方平台SDK原始数据
         NSLog(@" originalResponse: %@", resp.originalResponse);
-        
     }];
 }
 

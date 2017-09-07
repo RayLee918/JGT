@@ -50,7 +50,7 @@
     
     // ------------------- UMShare -------------------
     /* 打开日志 */
-    [[UMSocialManager defaultManager] openLog:YES];
+//    [[UMSocialManager defaultManager] openLog:YES];
     
     // 打开图片水印
     //[UMSocialGlobal shareInstance].isUsingWaterMark = YES;
@@ -58,6 +58,7 @@
     
     /* 设置友盟appkey */
     [[UMSocialManager defaultManager] setUmSocialAppkey:kUShareAppkey];
+    NSLog(@"um version - %@", [UMSocialGlobal umSocialSDKVersion]);
     
     // 注册各个平台的appkey, appid
     [self configUSharePlatforms];
@@ -73,7 +74,7 @@
     /*
      设置微信的appKey和appSecret
      */
-//    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_WechatSession appKey:@"wxdc1e388c3822c80b" appSecret:@"3baf1193c85774b3fd9d18447d76cab0" redirectURL:nil];
+    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_WechatSession appKey:kAppKeyWeiXin appSecret:kAppSecretWeiXin redirectURL:nil];
     
     /* 设置分享到QQ互联的appID
      * U-Share SDK为了兼容大部分平台命名，统一用appKey和appSecret进行参数设置，而QQ平台仅需将appID作为U-Share的appKey参数传进即可。
@@ -89,9 +90,9 @@
     if (!result) {
         // 其他如支付等SDK的回调
     }
+    NSLog(@"openURL -- %d", result);
     return result;
 }
-
 
 
 #pragma mark - 获取设备信息

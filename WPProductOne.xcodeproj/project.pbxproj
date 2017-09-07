@@ -1046,7 +1046,7 @@
 					"$(PROJECT_DIR)/WPProductOne/SocialLibraries/WeChat",
 					"$(PROJECT_DIR)/WPProductOne/UMSocialSDKPlugin",
 				);
-				OTHER_LDFLAGS = "-objc";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kevin.WPProductOne;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1071,7 +1071,7 @@
 					"$(PROJECT_DIR)/WPProductOne/SocialLibraries/WeChat",
 					"$(PROJECT_DIR)/WPProductOne/UMSocialSDKPlugin",
 				);
-				OTHER_LDFLAGS = "-objc";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kevin.WPProductOne;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
