@@ -1,0 +1,105 @@
+//
+//  WPProductOne-Prefix.pch
+//  WPProductOne
+//
+//  Created by ZeroHour on 2017/8/21.
+//  Copyright © 2017年 kevin. All rights reserved.
+//
+
+#ifndef WPProductOne_Prefix_pch
+#define WPProductOne_Prefix_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* WPProductOne_Prefix_pch */
+
+// ------------------- 引入的第三方框架 -------------------
+#import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
+#import "UIButton+AFNetworking.h"
+#import "UIImage+AFNetworking.h"
+#import "ClearCacheTool.h"
+#import "UMSocialQQHandler.h"
+#import <UMSocialCore/UMSocialCore.h>
+
+
+// ------------------- 尺寸 -------------------
+// 屏幕尺寸
+#define kScreenRect [[UIScreen mainScreen] bounds]
+
+// 屏幕宽度
+#define kScreentWidth kScreenRect.size.width
+
+// 屏幕高度
+#define kScreentHeight kScreenRect.size.height
+
+// 状态栏高度
+#define kBatteryHeight 20
+
+// 导航栏高度
+#define kNavgationBarHeight 44
+
+// 总导航高度
+#define kMargin64 64
+
+// 标签按钮高度
+#define kTabbarHeight 49
+
+// 按钮大小
+#define kHomeBtnWidth 44
+#define kHomeBtnHeight 34
+
+// 间距
+#define kMargin5  5
+#define kMargin10 10
+#define kMargin20 20
+#define kMargin30 30
+#define kMargin40 40
+
+// 图片
+#define kImageNamed(imageName) [UIImage imageNamed:imageName]
+
+// ------------------- 颜色 -------------------
+#define kClearColor [UIColor clearColor]
+#define kWhiteColor [UIColor whiteColor]
+#define kRedColor [UIColor redColor]
+#define kGreenColor [UIColor greenColor]
+#define kBlueColor [UIColor blueColor]
+
+#define kColor(s) [UIColor colorWithRed:(((s & 0xFF0000) >> 16))/255.0 green:(((s &0xFF00) >>8))/255.0 blue:((s &0xFF))/255.0 alpha:1.0]
+
+// 全局颜色
+#define kGlobalColor [UIColor colorWithRed:(((0xFF4F53 & 0xFF0000) >> 16))/255.0 green:(((0xFF4F53 &0xFF00) >>8))/255.0 blue:((0xFF4F53 &0xFF))/255.0 alpha:1.0]
+
+// 分割线颜色
+#define kLineColor [UIColor colorWithRed:(((0xEFEFEF & 0xFF0000) >> 16))/255.0 green:(((0xEFEFEF &0xFF00) >>8))/255.0 blue:((0xEFEFEF &0xFF))/255.0 alpha:1.0]
+
+// 字体颜色
+#define kTextColor [UIColor colorWithRed:(((0x1F1F1F & 0xFF0000) >> 16))/255.0 green:(((0x1F1F1F &0xFF00) >>8))/255.0 blue:((0x1F1F1F &0xFF))/255.0 alpha:1.0]
+
+#define kJGT @"http://192.168.1.178:8080/jgt"
+#define kJGTGetImage @"http://192.168.1.178:8080/jgt/downLoad/img?objKey="
+#define kUShareAppkey @"59af5e3365b6d646df000ad9"
+#define kAppKeyQQ @"1106400164"
+#define kAppSeceretQQ @"Z2wf5sItzefKSNYM"
+
+// 用到的key
+#define kUser @"user"
+#define kMsg @"msg"
+#define kData @"data"
+#define kStatus @"status"
+
+#define KAttentionNum @"attentionNum"
+#define kSubscriptionNum @"subscriptionNum"
+
+// NSUserDefaults
+#define kToken  @"token"
+
+
+
+
+
+
+
+
