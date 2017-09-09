@@ -42,10 +42,18 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>weixin</string>
+			<string>wx</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>d9b08bff075f8edd9eedc854cc629a30</string>
+				<string>wxd9b08bff075f8edd9eedc854cc629a30</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>WPProductOneAlipay</string>
 			</array>
 		</dict>
 	</array>
@@ -85,6 +93,8 @@
 		<string>mqzoneopensdkapi</string>
 		<string>mqqbrowser</string>
 		<string>mttbrowser</string>
+		<string>alipay</string>
+		<string>alipayshare</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

@@ -89,8 +89,30 @@
     BOOL result = [[UMSocialManager defaultManager] handleOpenURL:url sourceApplication:sourceApplication annotation:annotation];
     if (!result) {
         // 其他如支付等SDK的回调
+        if ([url.host isEqualToString:@"safepay"]) {
+            //跳转支付宝钱包进行支付，处理支付结果
+            [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
+                NSLog(@"alipay - result - 1 = %@",resultDic);
+            }];
+        }
+        return YES;
     }
-    NSLog(@"openURL -- %d", result);
+    return result;
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString*, id> *)options
+{
+    BOOL result = [[UMSocialManager defaultManager] handleOpenURL:url options:options];
+    if (!result) {
+        // 其他如支付等SDK的回调
+        if ([url.host isEqualToString:@"safepay"]) {
+            //跳转支付宝钱包进行支付，处理支付结果
+            [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
+                NSLog(@"alipay - result - 1 = %@",resultDic);
+            }];
+        }
+        return YES;
+    }
     return result;
 }
 
