@@ -11,5 +11,6 @@
 @interface SettingsViewController : UIViewController
 
 @property (nonatomic, strong) NSString * phoneNumber;
+@property (nonatomic, strong) NSDictionary * userInfo;
 
 @end

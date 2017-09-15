@@ -68,11 +68,15 @@
     _teacherDataSource = [NSArray array];
     [self getHomeNewsData];
     [self getTeacherData];
+    /*
+     
+     */
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    // 资讯刷新频率
     NSInteger value = [[[NSUserDefaults standardUserDefaults] valueForKey:@"refreshRate"] integerValue];
     if (value == 0) {
         value = 300;
@@ -139,7 +143,6 @@
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         _homeDataSource = [responseObject objectForKey:kData];
-//        NSLog(@"homeDatSource - %@", _homeDataSource);
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [_tableView reloadData];
@@ -236,16 +239,16 @@
     _baitiaoCenten2 = CGPointMake(teacherBtn.center.x, CGRectGetMaxY(homeBtn.frame));
     
     // 日历
-    UIButton * calendarBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGFloat calendarBtnY = navView.frame.size.height - (kNavgationBarHeight - 18.5) / 2 - 18.5;
-    calendarBtn.frame = CGRectMake(kMargin20, calendarBtnY, 16, 18.5);
-    [calendarBtn setImage:[UIImage imageNamed:@"calendar.png"] forState:UIControlStateNormal];
-    [calendarBtn addTarget:self action:@selector(calendarBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    [navView addSubview:calendarBtn];
+//    UIButton * calendarBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    CGFloat calendarBtnY = navView.frame.size.height - 44;
+//    calendarBtn.frame = CGRectMake(0, calendarBtnY, 44, 44);
+//    [calendarBtn setImage:[UIImage imageNamed:@"calendar.png"] forState:UIControlStateNormal];
+//    [calendarBtn addTarget:self action:@selector(calendarBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+//    [navView addSubview:calendarBtn];
     
     // 搜索
     UIButton * searchBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    searchBtn.frame = CGRectMake(kScreenRect.size.width - kMargin20 - 16, calendarBtnY, 16, 18.5);
+    searchBtn.frame = CGRectMake(kScreenRect.size.width - 44, 20, 44, 44);
     [searchBtn setImage:[UIImage imageNamed:@"search.png"] forState:UIControlStateNormal];
     [searchBtn addTarget:self action:@selector(searchBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     [navView addSubview:searchBtn];
@@ -747,31 +750,33 @@
     if (tableView.tag == 31) {
         NSLog(@"homeCell - didSelect -  %ld", indexPath.row);
         BuyViewController * buyVC = [BuyViewController new];
-        buyVC.userId = _homeDataSource[indexPath.row][@"userId"];
+        buyVC.courseId = _homeDataSource[indexPath.row][@"courseId"];
         [self.navigationController pushViewController:buyVC animated:YES];
     }
     else {
         NSLog(@"teacherCell - didSelect -  %ld", indexPath.row);
         TeacherDetailViewController * teacherDetailVC = [[TeacherDetailViewController alloc] init];
-        teacherDetailVC.userId = _teacherDataSource[indexPath.row][@"userId"];
+        teacherDetailVC.userId = _teacherDataSource[indexPath.row][@"lecturerId"];
         [self.navigationController pushViewController:teacherDetailVC animated:YES];
     }
 }
 
 #pragma mark - 日历事件
+/*
 - (void)calendarBtnClick:(UIButton *)sender {
     NSLog(@"calendarBtnClick");
-//    CalendarViewController * calendarVC = [CalendarViewController new];
-//    [self.navigationController pushViewController:calendarVC animated:YES];
-    [self getUserInfoForPlatform:UMSocialPlatformType_WechatSession];
+    CalendarViewController * calendarVC = [CalendarViewController new];
+    [self.navigationController pushViewController:calendarVC animated:YES];
+//    [self getUserInfoForPlatform:UMSocialPlatformType_WechatSession];
 }
-
+*/
+ 
 #pragma mark - 搜索事件
 - (void)searchBtnClick:(UIButton *)sender {
     NSLog(@"searchBtnClick");
-//    SearchViewController * searchVC = [SearchViewController new];
-//    [self.navigationController pushViewController:searchVC animated:YES];
-    [self doAlipayPay];
+    SearchViewController * searchVC = [SearchViewController new];
+    [self.navigationController pushViewController:searchVC animated:YES];
+//    [self doAlipayPay];
 }
 
 - (void)doAlipayPay
@@ -864,7 +869,7 @@
         // NOTE: 将签名成功字符串格式化为订单字符串,请严格按照该格式
         NSString *orderString = [NSString stringWithFormat:@"%@&sign=%@",
                                  orderInfoEncoded, signedString];
-        
+        NSLog(@"orderString - %@", orderString);
         // NOTE: 调用支付结果开始支付
         [[AlipaySDK defaultService] payOrder:orderString fromScheme:appScheme callback:^(NSDictionary *resultDic) {
             NSLog(@"reslut = %@",resultDic);
@@ -892,6 +897,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 
 /*
 #pragma mark - Navigation

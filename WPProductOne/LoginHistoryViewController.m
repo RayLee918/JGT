@@ -12,6 +12,7 @@
 @interface LoginHistoryViewController () <UITableViewDelegate, UITableViewDataSource>
 {
     UITableView * _tableView;
+    NSArray * _dataSource;
     NSArray * _dataSource1;
     NSArray * _dataSource2;
 }
@@ -22,10 +23,29 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    _dataSource1 = @[@"FRD-AL10", @"SAMSUNG 0921", @"iPhone 7", @"华为 H2981"];
-    _dataSource2 = @[@"5月21日 12:12 FRD", @"5月21日 12:12 SAMSUNG", @"5月21日 12:12 iPhone", @"5月21日 12:12 华为"];
     
+    _dataSource = [NSArray array];
+    NSLog(@"_dataSource - %ld", _dataSource.count);
     [self initView];
+    [self getLoginHistory];
+    
+}
+
+- (void)getLoginHistory {
+    NSString * urlStr = [NSString stringWithFormat:@"%@/center/user/loginHistory", kJGT];
+    [[AFHTTPSessionManager manager] GET:urlStr parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSArray * arr = [responseObject objectForKey:kData];
+        _dataSource = arr;
+        [_tableView reloadData];
+        NSLog(@"loginHistory - %@", responseObject);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
+//    _dataSource1 = @[@"FRD-AL10", @"SAMSUNG 0921", @"iPhone 7", @"华为 H2981"];
+//    _dataSource2 = @[@"5月21日 12:12 FRD", @"5月21日 12:12 SAMSUNG", @"5月21日 12:12 iPhone", @"5月21日 12:12 华为"];
+//    _dataSource = @[@{kMac:@"FRD-AL10", @"datetime":@"5月21日 12:12 FRD"}];
+//    [_tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -48,11 +68,12 @@
     [self.view addSubview:_tableView];
     _tableView.dataSource = self;
     _tableView.delegate = self;
+    _tableView.userInteractionEnabled = NO;
 }
 
 #pragma mark - tableView
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _dataSource1.count;
+    return _dataSource.count > 0 ? _dataSource.count : 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -67,10 +88,20 @@
         cell = [[LoginHistoryCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
     }
     
+    NSDictionary * dic = _dataSource[indexPath.row];
+    if (dic[@"loginMac"] != nil) {
+        
+        cell.firstLabel.text = dic[@"loginMac"];
+        
+    }
+    if ([dic[@"ctsStr"] length] >= 1) {
+        
+        cell.secondLabel.text = dic[@"ctsStr"];
+    }
     
-    cell.firstLabel.text = _dataSource1[indexPath.row];
-    cell.secondLabel.text = _dataSource2[indexPath.row];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//    cell.firstLabel.text = _dataSource1[indexPath.row];
+//    cell.secondLabel.text = _dataSource2[indexPath.row];
+//    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     return cell;
 }

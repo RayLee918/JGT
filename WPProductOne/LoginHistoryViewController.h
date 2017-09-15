@@ -10,4 +10,6 @@
 
 @interface LoginHistoryViewController : UIViewController
 
+@property (nonatomic, strong) NSString * userId;
+
 @end

@@ -17,6 +17,7 @@
 // ------------------- 引入的第三方框架 -------------------
 #import "AFNetworking.h"
 #import "UIImageView+AFNetworking.h"
+#import "CLTool.h"
 #import "UIButton+AFNetworking.h"
 #import "UIImage+AFNetworking.h"
 #import "ClearCacheTool.h"

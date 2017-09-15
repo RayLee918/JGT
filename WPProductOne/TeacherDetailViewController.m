@@ -47,6 +47,8 @@
     // 初始页面
     [self initView];
     
+    NSLog(@"userid - %@", self.userId);
+    
     // 获取数据
     [self getTeacherData];
 }
@@ -81,39 +83,43 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"%@", responseObject);
             NSDictionary * dic = [responseObject objectForKey:@"data"];
-            // 设置用户信息
-            [_headImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/downLoad/img?objKey=%@", kJGT, dic[@"lectPic"]]]];
             
-            _nameLabel.text = dic[@"lectNickName"];
-            _descLabel.text = dic[@"introduction"];
-            
-            // 标签
-            [_tagBtn setTitle:dic[@"lecturerLevel"] forState:UIControlStateNormal];
-            
-            // 关注
-            NSLog(@"isAttention - %@", dic[@"isAttention"]);
-            if ([dic[@"isAttention"] isEqualToString:@"1"]) {
-                
-                [_followBtn setTitle:@"已关注" forState:UIControlStateNormal];
-//                _followBtn.userInteractionEnabled = NO;
-            } else {
-                [_followBtn setTitle:@"+关注" forState:UIControlStateNormal];
-//                _followBtn.userInteractionEnabled = YES;
-            }
-            
-            // 关注, 粉丝, 动态
-            _followLabel.text = dic[@"attentionNum"];
-            _fansLabel.text = dic[@"subscriptionNum"];
-            _dynamicLabel.text = dic[@"dynamicNum"];
-            
-            // 老师资料
-            _descTextView.text = dic[@"introduction"];
-            
+            [self setUserInfo:dic];
         });
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"error - %@", error);
     }];
+}
+
+- (void)setUserInfo:(NSDictionary *)dic {
+    // 设置用户信息
+    [_headImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/downLoad/img?objKey=%@", kJGT, dic[@"lectPic"]]]];
+    
+    _nameLabel.text = dic[@"lectNickName"];
+    _descLabel.text = dic[@"introduction"];
+    
+    // 标签
+    [_tagBtn setTitle:dic[@"lecturerLevel"] forState:UIControlStateNormal];
+    
+    // 关注
+    NSLog(@"isAttention - %@", dic[@"isAttention"]);
+    if ([dic[@"isAttention"] isEqualToString:@"1"]) {
+        
+        [_followBtn setTitle:@"已关注" forState:UIControlStateNormal];
+        //                _followBtn.userInteractionEnabled = NO;
+    } else {
+        [_followBtn setTitle:@"+关注" forState:UIControlStateNormal];
+        //                _followBtn.userInteractionEnabled = YES;
+    }
+    
+    // 关注, 粉丝, 动态
+    _followLabel.text = dic[@"attentionNum"];
+    _fansLabel.text = dic[@"subscriptionNum"];
+    _dynamicLabel.text = dic[@"dynamicNum"];
+    
+    // 老师资料
+    _descTextView.text = dic[@"introduction"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

@@ -70,9 +70,23 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _dataSource1 = @[@"我的消息", @"帐单明细", @"银行卡管理", @"课程上传"];
-    _dataSource2 = @[@"我的消息", @"资金提现", @"银行卡管理", @"课程上传"];
+    _dataSource1 = @[@"我的消息", @"帐单明细", @"银行卡管理"];
+    _dataSource2 = @[@"我的消息", @"资金提现", @"银行卡管理"];
 //    _isTeacher = YES;
+    
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
+        
+        NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
+        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
+        AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+        [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -95,13 +109,13 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    if ([[NSUserDefaults standardUserDefaults] valueForKey:kToken]) {
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
         [self.view sendSubviewToBack:_loginView];
-        NSData * data = [[NSUserDefaults standardUserDefaults] valueForKey:kUser];
-        _userInfo = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-        NSLog(@"viewdidappear - %@", _userInfo);
-        [self setPersonInfo:_userInfo];
+        NSDictionary * dic = [[NSUserDefaults standardUserDefaults] valueForKey:kUser];
+        NSLog(@"viewdidappear - %@", dic);
+        [self setPersonInfo:dic];
         _settingBtn.hidden = NO;
+        
     } else {
         [self.view bringSubviewToFront:_loginView];
     }
@@ -373,7 +387,7 @@
     line2.frame = CGRectMake(0, CGRectGetMaxY(pwdLabel.frame), kScreentWidth, 1);
     [_loginView addSubview:line2];
     line2.backgroundColor = kColor(0xFFFFFF);
-    
+
     // 登录
     UIButton * loginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     loginBtn.frame = CGRectMake(30, CGRectGetMaxY(line2.frame) + 48, kScreentWidth - 60, 44);
@@ -421,6 +435,7 @@
     NSLog(@"longinBtn");
     if (_nameTF.text.length >= 1) {
         if (_pwdTF.text.length >= 6) {
+            [self.view endEditing:YES];
             NSString * token = @"";
             if ([[NSUserDefaults standardUserDefaults] valueForKey:kToken]) {
                 token = [[NSUserDefaults standardUserDefaults] valueForKey:kToken];
@@ -460,9 +475,7 @@
                                           };
                             
                             // 保存到本地
-//                            NSData * data = [NSKeyedArchiver archivedDataWithRootObject:[responseObject objectForKey:kData]];
                             [[NSUserDefaults standardUserDefaults] setValue:_userInfo forKey:kUser];
-                            NSLog(@"account - token - %@", [[NSUserDefaults standardUserDefaults] valueForKey:kToken]);
                             NSLog(@"account - %@", _userInfo);
                             
                             // 清空登录信息
@@ -470,7 +483,7 @@
                             _pwdTF.text = @"";
                             
                             // 设置个人信息
-                            [self setPersonInfo:[responseObject objectForKey:@"data"]];
+                            [self setPersonInfo:_userInfo];
                             [_tableView reloadData];
                             _settingBtn.hidden = NO;
                             [self.view sendSubviewToBack:_loginView];
@@ -492,11 +505,11 @@
 
 #pragma mark - 设置用户信息
 - (void)setPersonInfo:(NSDictionary *)info  {
-    NSString * imgStr = [NSString stringWithFormat:@"%@%@", kJGTGetImage, info[kUser][@"headPic"]];
+    NSString * imgStr = [NSString stringWithFormat:@"%@%@", kJGTGetImage, info[@"headPic"]];
     NSLog(@"setPersonInfo - %@", imgStr);
     [_headImageView setImageWithURL:[NSURL URLWithString:imgStr]];
     
-    _nickNameLabel.text = info[kUser][@"nickName"];
+    _nickNameLabel.text = info[@"nickName"];
     NSString * fansStr = [NSString stringWithFormat:@"粉丝: %@", info[kSubscriptionNum]];
     NSMutableAttributedString * mFansStr = [[NSMutableAttributedString alloc] initWithString:fansStr];
     [mFansStr addAttribute:NSForegroundColorAttributeName value:kRedColor range:NSMakeRange(4, fansStr.length-4)];
@@ -611,8 +624,7 @@
 - (void)settingsItemClick:(UIBarButtonItem *)sender {
     NSLog(@"settingsItemClick");
     SettingsViewController * settingsVC = [SettingsViewController new];
-    settingsVC.phoneNumber = _userInfo[@"user"][@"phone"];
-    NSLog(@"user - %@, phone - %@", _userInfo[kUser], _userInfo[kUser][@"phone"]);
+    settingsVC.userInfo = _userInfo;
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
 
@@ -626,8 +638,10 @@
 #pragma mark - 检查更新
 - (void)versionBtnClick:(UIButton *)sender {
     NSLog(@"versionBtnClick");
-    VersionViewController * versionVC = [VersionViewController new];
-    [self.navigationController pushViewController:versionVC animated:YES];
+//    VersionViewController * versionVC = [VersionViewController new];
+//    [self.navigationController pushViewController:versionVC animated:YES];
+    
+    [CLTool showAlert:@"已经是最新版本了" target:self];
 }
 
 #pragma mark - 退出按钮

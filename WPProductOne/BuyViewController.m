@@ -24,6 +24,10 @@
     [self initView];
 }
 
+- (void)getBuyData {
+    
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBar.hidden = NO;
@@ -33,14 +37,16 @@
 
 - (void)initView {
     
-    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kScreentWidth, kScreentHeight - kBatteryHeight - kTabbarHeight - kNavgationBarHeight - 100)];
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kScreentWidth, kScreentHeight - kBatteryHeight - kTabbarHeight - kNavgationBarHeight)];
     [self.view addSubview:webView];
     webView.backgroundColor = kWhiteColor;
     webView.opaque = NO;
+    NSString * urlStr = [NSString stringWithFormat:@"%@/views/html/CourseInfo.html?id=%@", kJGT, self.courseId];
+    NSLog(@"urlStr - %@", urlStr);
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]]];
     
-//    NSString * urlStr = [NSString stringWithFormat:@"%@/views/html/userAgreement.html", kJGT];
-//    NSLog(@"urlStr - %@", urlStr);
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com"]]];
+    UILabel * label = [UILabel new];
+    NSLog(@"font - %@", label.font);
     
     UIButton * buyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     buyBtn.frame = CGRectMake(0, kScreentHeight - kMargin64 - kTabbarHeight - 44, kScreentWidth, 44);
@@ -52,28 +58,28 @@
     [buyBtn addTarget:self action:@selector(buyBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     // 特别提示
-    UILabel * label1 = [UILabel new];
-    label1.frame = CGRectMake(0, CGRectGetMinY(buyBtn.frame) - 10 - 44, kScreentWidth, 22);
-    [self.view addSubview:label1];
-    label1.textColor = kColor(0x9B9B9B);
-    label1.textAlignment = NSTextAlignmentCenter;
-    label1.font = [UIFont systemFontOfSize:10];
-    NSString * str1 = @"点击确认支付代表同意《VIP课程购买》并已阅读《风险提示》";
+//    UILabel * label1 = [UILabel new];
+//    label1.frame = CGRectMake(0, CGRectGetMinY(buyBtn.frame) - 10 - 44, kScreentWidth, 22);
+//    [self.view addSubview:label1];
+//    label1.textColor = kColor(0x9B9B9B);
+//    label1.textAlignment = NSTextAlignmentCenter;
+//    label1.font = [UIFont systemFontOfSize:10];
+//    NSString * str1 = @"点击确认支付代表同意《VIP课程购买》并已阅读《风险提示》";
+//    
+//    NSRange range1 = [str1 rangeOfString:@"《VIP课程购买》"];
+//    NSRange range2 = [str1 rangeOfString:@"《风险提示》"];
+//    NSMutableAttributedString * mStr1 = [[NSMutableAttributedString alloc] initWithString:str1];
+//    [mStr1 addAttribute:NSForegroundColorAttributeName value:kColor(0x4990E2) range:range1];
+//    [mStr1 addAttribute:NSForegroundColorAttributeName value:kColor(0x4990E2) range:range2];
+//    label1.attributedText = mStr1;
     
-    NSRange range1 = [str1 rangeOfString:@"《VIP课程购买》"];
-    NSRange range2 = [str1 rangeOfString:@"《风险提示》"];
-    NSMutableAttributedString * mStr1 = [[NSMutableAttributedString alloc] initWithString:str1];
-    [mStr1 addAttribute:NSForegroundColorAttributeName value:kColor(0x4990E2) range:range1];
-    [mStr1 addAttribute:NSForegroundColorAttributeName value:kColor(0x4990E2) range:range2];
-    label1.attributedText = mStr1;
-    
-    UILabel * label2 = [UILabel new];
-    label2.frame = CGRectMake(0, CGRectGetMinY(buyBtn.frame) - 10 - 22, kScreentWidth, 22);
-    [self.view addSubview:label2];
-    label2.textColor = kColor(0x9B9B9B);
-    label2.textAlignment = NSTextAlignmentCenter;
-    label2.font = [UIFont systemFontOfSize:10];
-    label2.text = @"VIP课程均为荐股厅有限公司提供";
+//    UILabel * label2 = [UILabel new];
+//    label2.frame = CGRectMake(0, CGRectGetMinY(buyBtn.frame) - 10 - 22, kScreentWidth, 22);
+//    [self.view addSubview:label2];
+//    label2.textColor = kColor(0x9B9B9B);
+//    label2.textAlignment = NSTextAlignmentCenter;
+//    label2.font = [UIFont systemFontOfSize:10];
+//    label2.text = @"VIP课程均为荐股厅有限公司提供";
     
     [self initBuyView1];
     [self initBuyViwe2];

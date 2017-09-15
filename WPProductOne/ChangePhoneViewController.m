@@ -6,9 +6,9 @@
 //  Copyright © 2017年 kevin. All rights reserved.
 //
 
-#import "ChangePasswordViewController.h"
+#import "ChangePhoneViewController.h"
 
-@interface ChangePasswordViewController () <UITextFieldDelegate>
+@interface ChangePhoneViewController () <UITextFieldDelegate>
 {
     UITextField * _phoneTF;
     UITextField * _verifyTF;
@@ -18,7 +18,7 @@
 }
 @end
 
-@implementation ChangePasswordViewController
+@implementation ChangePhoneViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -36,7 +36,7 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBar.hidden = NO;
     self.view.backgroundColor = kWhiteColor;
-    self.title = @"修改手机号或者密码";
+    self.title = @"修改手机号";
 }
 
 - (void)initView {
@@ -57,14 +57,7 @@
     phoneTF.userInteractionEnabled = YES;
     phoneTF.keyboardType = UIKeyboardTypeNumberPad;
     phoneTF.placeholder = @"请输入手机号";
-
-//    phoneTF.text = @"152****2838";
-//    phoneTF.textColor = kColor(0xB0B0B0);
     _phoneTF = phoneTF;
-    if (self.phoneNumber.length == 11) {
-        phoneTF.userInteractionEnabled = NO;
-        phoneTF.text = self.phoneNumber;
-    }
     
     UIView * lineView = [UIView new];
     lineView.frame = CGRectMake(20, CGRectGetMaxY(phoneTF.frame), kScreentWidth - 40, 1);
@@ -96,63 +89,55 @@
     _verifyBtn = verifyBtn;
     
     // 密码
-    UITextField * passwordTf = [[UITextField alloc] init];
-    passwordTf.frame = CGRectMake(20, CGRectGetMaxY(verifyTF.frame) + 1, kScreentWidth, 48);
-    [self.view addSubview:passwordTf];
-    passwordTf.placeholder = @"请输入6到16位字符";
-    passwordTf.delegate = self;
-    passwordTf.returnKeyType = UIReturnKeyDone;
-    passwordTf.secureTextEntry = YES;
-    _passwordTF = passwordTf;
-    
-    UIButton * pwdBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    pwdBtn.frame = CGRectMake(kScreentWidth - 44, CGRectGetMinY(passwordTf.frame), 44, 44);
-    [self.view addSubview:pwdBtn];
-    [pwdBtn addTarget:self action:@selector(pwdBtnClick) forControlEvents:UIControlEventTouchUpInside];
-    [pwdBtn setImage:kImageNamed(@"pwd.png") forState:UIControlStateNormal];
-    
-    UIView * lineView3 = [UIView new];
-    lineView3.frame = CGRectMake(20, CGRectGetMaxY(passwordTf.frame) - 1, kScreentWidth - 40, 1);
-    [self.view addSubview:lineView3];
-    lineView3.backgroundColor = kColor(0xF7F7F7);
+//    UITextField * passwordTf = [[UITextField alloc] init];
+//    passwordTf.frame = CGRectMake(20, CGRectGetMaxY(verifyTF.frame) + 1, kScreentWidth, 48);
+//    [self.view addSubview:passwordTf];
+//    passwordTf.placeholder = @"请输入6到16位字符";
+//    passwordTf.delegate = self;
+//    passwordTf.returnKeyType = UIReturnKeyDone;
+//    passwordTf.secureTextEntry = YES;
+//    _passwordTF = passwordTf;
+//    
+//    UIButton * pwdBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    pwdBtn.frame = CGRectMake(kScreentWidth - 44, CGRectGetMinY(passwordTf.frame), 44, 44);
+//    [self.view addSubview:pwdBtn];
+//    [pwdBtn addTarget:self action:@selector(pwdBtnClick) forControlEvents:UIControlEventTouchUpInside];
+//    [pwdBtn setImage:kImageNamed(@"pwd.png") forState:UIControlStateNormal];
+//    
+//    UIView * lineView3 = [UIView new];
+//    lineView3.frame = CGRectMake(20, CGRectGetMaxY(passwordTf.frame) - 1, kScreentWidth - 40, 1);
+//    [self.view addSubview:lineView3];
+//    lineView3.backgroundColor = kColor(0xF7F7F7);
     
     // 完成
     UIButton * submitBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    submitBtn.frame = CGRectMake((kScreentWidth - 135.5) / 2, CGRectGetMaxY(lineView3.frame) +  20, 135.5, 37.5);
+    submitBtn.frame = CGRectMake((kScreentWidth - 135.5) / 2, CGRectGetMaxY(lineView2.frame) +  20, 135.5, 37.5);
     [self.view addSubview:submitBtn];
     submitBtn.backgroundColor = kColor(0xFF4F53);
-    [submitBtn addTarget:self action:@selector(submitBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [submitBtn addTarget:self action:@selector(changPhoneSubmitBtnClick) forControlEvents:UIControlEventTouchUpInside];
     [submitBtn setTitle:@"完成提交" forState:UIControlStateNormal];
     submitBtn.layer.cornerRadius = 5;
 }
 
 #pragma mark - 提交按钮
-- (void)submitBtnClick {
+- (void)changPhoneSubmitBtnClick {
     if (_phoneTF.text.length == 11) {
         if (_verifyTF.text.length >= 1) {
-            if (_passwordTF.text.length >=6) {
-                NSDictionary * params = @{@"phone":_phoneTF.text, @"password":_passwordTF.text, @"inputCode":_verifyTF.text};
-                [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"%@/regOrLog/resetPwd", kJGT] parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                    if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
-                        UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:@"修改成功" preferredStyle:UIAlertControllerStyleAlert];
-                        [alert addAction:[UIAlertAction actionWithTitle:@"去登录" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                            NSLog(@"返回登录界面 - -");
-                            // 返回登录界面
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                
-                                [self.navigationController popViewControllerAnimated:YES];
-                            });
-                        }]];
-                        [self presentViewController:alert animated:YES completion:nil];
-                    } else {
-                        [self showAlert:[responseObject objectForKey:@"msg"]];
-                    }
+            NSDictionary * params = @{@"phone":_phoneTF.text, @"inputCode":_verifyTF.text, @"pageCode":_verifyTF.text};
+            NSLog(@"changPhoneSubmitBtnClick %@", params);
+                [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"%@/regOrLog/modifyPhone", kJGT] parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:@"修改成功" preferredStyle:UIAlertControllerStyleAlert];
+                    [alert addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        // 返回设置界面
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            [self.navigationController popViewControllerAnimated:YES];
+                        });
+                    }]];
+                    [self presentViewController:alert animated:YES completion:nil];
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     NSLog(@"endEdit --- %@", error);
                 }];
-            } else {
-                [self showAlert:@"密码至少6位"];
-            }
         } else {
             [self showAlert:@"请填写验证码"];
         }
@@ -169,9 +154,9 @@
 }
 
 #pragma mark - 密码显示隐藏
-- (void)pwdBtnClick {
-    _passwordTF.secureTextEntry = !_passwordTF.secureTextEntry;
-}
+//- (void)pwdBtnClick {
+//    _passwordTF.secureTextEntry = !_passwordTF.secureTextEntry;
+//}
 
 #pragma mark - textFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -185,10 +170,10 @@
 
 #pragma mark - 验证码
 - (void)verifyBtnClick:(UIButton *)sender {
-    NSLog(@"verifyBtnClick");
-    sender.userInteractionEnabled = NO;
-    __block NSInteger value = 10;
+    NSLog(@"verifyBtnClick - %@", _phoneTF.text);
     if (_phoneTF.text.length == 11) {
+        __block NSInteger value = 10;
+        sender.userInteractionEnabled = NO;
         _timer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
             NSLog(@"verify - %ld", value);
             NSString * str = [NSString stringWithFormat:@"%ld重新获取", --value];
@@ -200,30 +185,16 @@
                 [sender setTitle:str forState:UIControlStateNormal];
             }
         }];
-//        NSString * urlStr = [NSString stringWithFormat:@"%@", kJGT];
-//        [[AFHTTPSessionManager manager] GET:urlStr parameters:@{kPhone:_phoneTF.text} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//            [self showAlert:[responseObject objectForKey:@"获取成功"]];
-//        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//            [self showAlert:@"获取失败"];
-//        }];
+        //        NSString * urlStr = [NSString stringWithFormat:@"%@", kJGT];
+        //        [[AFHTTPSessionManager manager] GET:urlStr parameters:@{kPhone:_phoneTF.text} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        //            [self showAlert:[responseObject objectForKey:@"获取成功"]];
+        //        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        //            [self showAlert:@"获取失败"];
+        //        }];
     } else {
         [CLTool showAlert:@"填写手机号" target:self];
     }
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

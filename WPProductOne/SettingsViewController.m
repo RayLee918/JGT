@@ -8,7 +8,7 @@
 
 #import "SettingsViewController.h"
 #import "SettingsCell.h"
-#import "ChangePasswordViewController.h"
+#import "ChangePhoneViewController.h"
 #import "LoginHistoryViewController.h"
 
 @interface SettingsViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -115,11 +115,11 @@
     NSLog(@"settings - didSelect - %ld", indexPath.row);
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.row == 0) {
-        ChangePasswordViewController * changePasswordVC = [ChangePasswordViewController new];
-        changePasswordVC.phoneNumber = self.phoneNumber;
-        [self.navigationController pushViewController:changePasswordVC animated:YES];
+        ChangePhoneViewController * changePhoneVC = [ChangePhoneViewController new];
+        [self.navigationController pushViewController:changePhoneVC animated:YES];
     } else if (indexPath.row == 1) {
         LoginHistoryViewController * loginHistoryVC = [LoginHistoryViewController new];
+        loginHistoryVC.userId = self.userInfo[kUserID];
         [self.navigationController pushViewController:loginHistoryVC animated:YES];
     } else if (indexPath.row == 2) {
         NSLog(@"清除缓存");
