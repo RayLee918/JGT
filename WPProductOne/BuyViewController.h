@@ -11,5 +11,6 @@
 @interface BuyViewController : UIViewController
 
 @property (nonatomic, strong) NSString * courseId;
+@property (nonatomic, strong) NSString * price;
 
 @end

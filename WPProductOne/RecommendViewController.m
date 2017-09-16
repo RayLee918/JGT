@@ -751,12 +751,13 @@
         NSLog(@"homeCell - didSelect -  %ld", indexPath.row);
         BuyViewController * buyVC = [BuyViewController new];
         buyVC.courseId = _homeDataSource[indexPath.row][@"courseId"];
+        buyVC.price = _homeDataSource[indexPath.row][@"price"];
         [self.navigationController pushViewController:buyVC animated:YES];
     }
     else {
         NSLog(@"teacherCell - didSelect -  %ld", indexPath.row);
         TeacherDetailViewController * teacherDetailVC = [[TeacherDetailViewController alloc] init];
-        teacherDetailVC.userId = _teacherDataSource[indexPath.row][@"lecturerId"];
+        teacherDetailVC.userId = _teacherDataSource[indexPath.row][@"lectId"];
         [self.navigationController pushViewController:teacherDetailVC animated:YES];
     }
 }

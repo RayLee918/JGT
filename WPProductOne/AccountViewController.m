@@ -73,20 +73,6 @@
     _dataSource1 = @[@"我的消息", @"帐单明细", @"银行卡管理"];
     _dataSource2 = @[@"我的消息", @"资金提现", @"银行卡管理"];
 //    _isTeacher = YES;
-    
-    if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
-        
-        NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
-        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
-        AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
-        [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
-            
-        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            
-        }];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {

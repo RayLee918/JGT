@@ -298,7 +298,7 @@
     NSMutableArray * arr = _dataSources[self.selectedIndex];
     if (arr.count >= 1) {
         NSDictionary * dic = arr[indexPath.row];
-        teacherDetailVC.userId = dic[@"userId"];
+        teacherDetailVC.userId = dic[@"lecturerId"];
         NSLog(@"did - %@", dic);
     }
     

@@ -33,6 +33,20 @@
 //    NSInteger timeInterval = [date timeIntervalSince1970];
 //    NSLog(@"%@, %@", date, [NSString stringWithFormat:@"%ld", timeInterval]);
 
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
+        
+        NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
+        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
+        AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+        [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+    }
+    
     // 更改导航主题
     UINavigationBar * bar = [UINavigationBar appearance];
     bar.barTintColor = kGlobalColor;

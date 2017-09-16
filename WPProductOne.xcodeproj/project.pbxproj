@@ -96,6 +96,9 @@
 		3B4709341F6924ED00AE0E19 /* search_small2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B4709331F6924ED00AE0E19 /* search_small2@2x.png */; };
 		3B47093D1F6A1B6800AE0E19 /* MsgViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B47093C1F6A1B6800AE0E19 /* MsgViewController.m */; };
 		3B4709401F6A1DE300AE0E19 /* MsgCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B47093F1F6A1DE300AE0E19 /* MsgCell.m */; };
+		3B4709451F6B844C00AE0E19 /* zhifubao@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B4709431F6B844C00AE0E19 /* zhifubao@2x.png */; };
+		3B4709461F6B844C00AE0E19 /* weixin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B4709441F6B844C00AE0E19 /* weixin@2x.png */; };
+		3B4709481F6B85F400AE0E19 /* back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3B4709471F6B85F400AE0E19 /* back@2x.png */; };
 		3B4B670E1F4FBC0C000A0AA5 /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B4B670D1F4FBC0C000A0AA5 /* RegisterViewController.m */; };
 		3B4B67111F4FCD51000A0AA5 /* RemarkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B4B67101F4FCD51000A0AA5 /* RemarkViewController.m */; };
 		3B4B67141F4FF302000A0AA5 /* WithDrawViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B4B67131F4FF302000A0AA5 /* WithDrawViewController.m */; };
@@ -288,6 +291,9 @@
 		3B47093C1F6A1B6800AE0E19 /* MsgViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MsgViewController.m; sourceTree = "<group>"; };
 		3B47093E1F6A1DE300AE0E19 /* MsgCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgCell.h; sourceTree = "<group>"; };
 		3B47093F1F6A1DE300AE0E19 /* MsgCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MsgCell.m; sourceTree = "<group>"; };
+		3B4709431F6B844C00AE0E19 /* zhifubao@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zhifubao@2x.png"; sourceTree = "<group>"; };
+		3B4709441F6B844C00AE0E19 /* weixin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "weixin@2x.png"; sourceTree = "<group>"; };
+		3B4709471F6B85F400AE0E19 /* back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back@2x.png"; sourceTree = "<group>"; };
 		3B4B670C1F4FBC0C000A0AA5 /* RegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
 		3B4B670D1F4FBC0C000A0AA5 /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
 		3B4B670F1F4FCD51000A0AA5 /* RemarkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemarkViewController.h; sourceTree = "<group>"; };
@@ -714,6 +720,9 @@
 				3B0F37961F4C0B1700E5379E /* teacher */,
 				3B0F37581F4AC64200E5379E /* recommend1 */,
 				3BA25A941F57FF1D0045B757 /* default_head@2x.png */,
+				3B4709431F6B844C00AE0E19 /* zhifubao@2x.png */,
+				3B4709471F6B85F400AE0E19 /* back@2x.png */,
+				3B4709441F6B844C00AE0E19 /* weixin@2x.png */,
 				3B3F902C1F5FA4940082A4A2 /* Default-568h@2x.png */,
 				3BA25A961F593B460045B757 /* carousel@2x.png */,
 				3B0F377D1F4AD93D00E5379E /* scroll0@2x.png */,
@@ -1079,6 +1088,8 @@
 			files = (
 				3B0F37761F4AC64200E5379E /* search1@2x.png in Resources */,
 				3B0F37921F4C05C600E5379E /* order@2x.png in Resources */,
+				3B4709451F6B844C00AE0E19 /* zhifubao@2x.png in Resources */,
+				3B4709461F6B844C00AE0E19 /* weixin@2x.png in Resources */,
 				3B0F379D1F4C1D3A00E5379E /* deal@2x.png in Resources */,
 				3B0F377A1F4AC64200E5379E /* bond@2x.png in Resources */,
 				3B0F37731F4AC64200E5379E /* fund@2x.png in Resources */,
@@ -1092,6 +1103,7 @@
 				3B3F901E1F5F9A130082A4A2 /* UMSocialSDKPromptResources.bundle in Resources */,
 				3B0F37831F4ADA5000E5379E /* scroll3@2x.png in Resources */,
 				3B3F900E1F5E7D4F0082A4A2 /* money@2x.png in Resources */,
+				3B4709481F6B85F400AE0E19 /* back@2x.png in Resources */,
 				3B0F376C1F4AC64200E5379E /* custom@2x.png in Resources */,
 				3B0F37791F4AC64200E5379E /* foreign@2x.png in Resources */,
 				3B0F37751F4AC64200E5379E /* shutiao@2x.png in Resources */,

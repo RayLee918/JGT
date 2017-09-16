@@ -202,6 +202,7 @@
     
     BuyViewController * buyVC = [BuyViewController new];
     buyVC.courseId = _dataSource[indexPath.row][@"courseId"];
+    buyVC.price = _dataSource[indexPath.row][@"price"];
     [self.navigationController pushViewController:buyVC animated:YES];
 }
 

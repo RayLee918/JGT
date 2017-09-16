@@ -34,6 +34,7 @@
     
     UITextView * _descTextView;
     NSArray * _overViewDataSource;
+    NSArray * _processViewDataSource;
 }
 @end
 
@@ -43,6 +44,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     _overViewDataSource = [[NSArray alloc] init];
+    _processViewDataSource = [[NSArray alloc] init];
     
     // 初始页面
     [self initView];
@@ -51,6 +53,8 @@
     
     // 获取数据
     [self getTeacherData];
+    [self getprocessViewDataSource];
+    [self getOverViewDataSource];
 }
 
 #pragma mark - 获取已完结课程
@@ -59,18 +63,43 @@
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     [manager GET:urlStr parameters:@{@"id":self.userId} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        NSLog(@"获取已完结课程 - %@", responseObject);
-        
-        _overViewDataSource = [responseObject objectForKey:kData];
-        NSLog(@"%@", _overViewDataSource);
-        
-        // 更新UI
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_overView reloadData];
-        });
+        NSLog(@"---- %@", responseObject);
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            
+            _overViewDataSource = [responseObject objectForKey:kData];
+            // 更新UI
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [_overView reloadData];
+            });
+        } else {
+            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+        }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"获取已完结课程 - error - %@", error);
+    }];
+}
+
+#pragma mark - 获取进行中的课程
+- (void)getprocessViewDataSource {
+    NSString * urlStr = [NSString stringWithFormat:@"%@/lecturer/overCourse", kJGT];
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    [manager GET:urlStr parameters:@{@"id":self.userId} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSLog(@"-- %@", responseObject);
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            
+            _processViewDataSource = [responseObject objectForKey:kData];
+            // 更新UI
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [_dealView reloadData];
+            });
+        } else {
+            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
     }];
 }
 
@@ -92,6 +121,7 @@
     }];
 }
 
+#pragma mark - 设置个人信息
 - (void)setUserInfo:(NSDictionary *)dic {
     // 设置用户信息
     [_headImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/downLoad/img?objKey=%@", kJGT, dic[@"lectPic"]]]];
@@ -103,7 +133,6 @@
     [_tagBtn setTitle:dic[@"lecturerLevel"] forState:UIControlStateNormal];
     
     // 关注
-    NSLog(@"isAttention - %@", dic[@"isAttention"]);
     if ([dic[@"isAttention"] isEqualToString:@"1"]) {
         
         [_followBtn setTitle:@"已关注" forState:UIControlStateNormal];
@@ -274,7 +303,7 @@
     [self.view addSubview:dealBtn];
     [dealBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
     dealBtn.titleLabel.font = [UIFont systemFontOfSize:12];
-    [dealBtn setTitle:@"交易/分析" forState:UIControlStateNormal];
+    [dealBtn setTitle:@"进行中" forState:UIControlStateNormal];
     [dealBtn addTarget:self action:@selector(dealBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     dealBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     _selectedBtn = dealBtn;
@@ -325,37 +354,41 @@
         
         return _overViewDataSource.count;
     }
-    return 20;
+    return _processViewDataSource.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView.tag == 20) {
-        return 195;
+        return 150.5;
     }
     return 145.5 + 5;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray * dataSource = nil;
     if (tableView.tag == 20) {
-        static NSString * identifier = @"teacherDetail";
-        DealCell * cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-        if (!cell) {
-            cell = [[DealCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-        }
+//        static NSString * identifier = @"teacherDetail";
+//        HomeCell * cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+//        if (!cell) {
+//            cell = [[HomeCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+//        }
+//        cell.tittleDescLabel.text = @"产品交易A";
+//        cell.label1.text = @"A计划";
+//        cell.label2.text = @"产品介绍";
+//        cell.label3.text = @"100股币";
+//        cell.label4.text = @"近期建仓，预计收益金额在10%欢迎广大股民进行投顾。";
+//        
+//        cell.tittleDescLabel.text = @"产品交易B";
+//        cell.label5.text = @"B计划";
+//        cell.label6.text = @"产品介绍";
+//        cell.label7.text = @"100股币";
+//        cell.label8.text = @"近期建仓，预计收益金额在10%欢迎广大股民进行投顾。";
         
-        cell.tittleDescLabel.text = @"产品交易A";
-        cell.label1.text = @"A计划";
-        cell.label2.text = @"产品介绍";
-        cell.label3.text = @"100股币";
-        cell.label4.text = @"近期建仓，预计收益金额在10%欢迎广大股民进行投顾。";
-        
-        cell.tittleDescLabel.text = @"产品交易B";
-        cell.label5.text = @"B计划";
-        cell.label6.text = @"产品介绍";
-        cell.label7.text = @"100股币";
-        cell.label8.text = @"近期建仓，预计收益金额在10%欢迎广大股民进行投顾。";
-        
-        return cell;
+
+        dataSource = _processViewDataSource;
+    }
+    else {
+        dataSource = _overViewDataSource;
     }
     static NSString * identifier = @"cell";
     
@@ -365,21 +398,12 @@
     }
     
     // 设置cell的属性
-//    cell.icon.image = [UIImage imageNamed:@"icon.png"];
-//    cell.nickNameLbl.text = @"股票的刘老师";
-//    cell.dateLbl.text = @"30分钟前";
-//    cell.contentLbl.text = @"我正在进行VIP直播，主题为【被立即数实战课】";
-    
-    NSLog(@"cell - %@", _overViewDataSource);
     cell.icon.image = _headImageView.image;
     cell.nickNameLbl.text = _nameLabel.text;
-    NSString * overStr = [NSString stringWithFormat:@"%@ - 已完结", _overViewDataSource[indexPath.row][@"courseName"]];
+    NSLog(@"cell - %@", _nameLabel.text);
+    NSString * overStr = [NSString stringWithFormat:@"%@ - 已完结", dataSource[indexPath.row][@"courseName"]];
     cell.contentLbl.text = overStr;
-    NSInteger dateI= [_overViewDataSource[indexPath.row][@"cts"] integerValue] / 1000;
-//    NSDate * date = [NSDate dateWithTimeIntervalSince1970:dateI];
-//    NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-//    [formatter setDateFormat:@"yyyy-MM-dd hh:mm:ss"];
-//    NSString * dateStr = [formatter stringFromDate:date];
+    NSInteger dateI= [dataSource[indexPath.row][@"cts"] integerValue] / 1000;
     cell.dateLbl.text = [self dateConvert:[NSString stringWithFormat:@"%ld", dateI]];
 
     
@@ -407,7 +431,16 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     BuyViewController * buyVC = [BuyViewController new];
+    if (tableView == _descView) {
+        buyVC.courseId = _processViewDataSource[indexPath.row][@"id"];
+        buyVC.price = _processViewDataSource[indexPath.row][@"price"];
+    } else {
+        buyVC.courseId = _overViewDataSource[indexPath.row][@"id"];
+        buyVC.price = _overViewDataSource[indexPath.row][@"price"];
+    }
+
     [self.navigationController pushViewController:buyVC animated:YES];
 }
 
@@ -504,11 +537,12 @@
     _selectedBtn = sender;
     
     if (sender.tag == 10) {
+        [_dealView reloadData];
         [self.view bringSubviewToFront:_dealView];
     } else if (sender.tag == 11) {
         [self.view bringSubviewToFront:_descView];
     } else {
-        [self getOverViewDataSource];
+        [_overView reloadData];
         [self.view bringSubviewToFront:_overView];
     }
 }

@@ -13,6 +13,13 @@
     UIButton * _backgroundBtn;
     UIView * _buyView1;
     UIView * _buyView2;
+    NSMutableArray * _priceBtnArray;
+    UILabel * _moneyLabel2;
+    UILabel * _moneyLabel4;
+    NSArray * _priceArray;
+    UIButton * _weixinBtn;
+    UIButton * _zhifubaoBtn;
+    NSString * _payMethod;
 }
 @end
 
@@ -21,11 +28,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _payMethod = @"";
+//    _priceArray = @[@{@"month":@"1个月", @"price":@"1"}, @{@"month":@"2个月", @"price":@"2"}, @{@"month":@"3个月", @"price":@"3"}, @{@"month":@"4个月", @"price":@"4"}];
     [self initView];
+//    [self initBuyView1];
+    [self initBuyViwe2];
+    
+    [self getCourseInfo];
 }
 
-- (void)getBuyData {
+- (void)getCourseInfo {
     
+    _moneyLabel4.text = [NSString stringWithFormat:@"%@元", self.price];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -81,12 +96,6 @@
 //    label2.font = [UIFont systemFontOfSize:10];
 //    label2.text = @"VIP课程均为荐股厅有限公司提供";
     
-    [self initBuyView1];
-    [self initBuyViwe2];
-    
-}
-
-- (void)initBuyView1 {
     // 背景
     _backgroundBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _backgroundBtn.frame = CGRectMake(0, 0, kScreentWidth, kScreentHeight);
@@ -94,20 +103,23 @@
     _backgroundBtn.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.1];
     [_backgroundBtn addTarget:self action:@selector(backgroundBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     _backgroundBtn.hidden = YES;
-//    _backgroundBtn.backgroundColor = kRedColor;
+    
+}
+
+- (void)initBuyView1 {
     
     _buyView1 = [UIView new];
     CGFloat height = 44 * 4 + (64 + 15) * 2;
     _buyView1.frame = CGRectMake(0, CGRectGetMaxY(_backgroundBtn.frame) - height - 49 - 64, kScreentWidth, height);
-    [_backgroundBtn addSubview:_buyView1];
     _buyView1.backgroundColor = kWhiteColor;
+    
     
     UIButton * buyBtn2 = [UIButton buttonWithType:UIButtonTypeCustom];
     buyBtn2.frame = CGRectMake(0, _buyView1.frame.size.height - 44, kScreentWidth, 44);
     [_buyView1 addSubview:buyBtn2];
-    buyBtn2.backgroundColor = kGlobalColor;
     buyBtn2.titleLabel.font = [UIFont systemFontOfSize:13];
-    [buyBtn2 setTitle:@"立即购买2" forState:UIControlStateNormal];
+    [buyBtn2 setTitle:@"立即购买" forState:UIControlStateNormal];
+    [buyBtn2 setBackgroundImage:kImageNamed(@"btn_background.png") forState:UIControlStateNormal];
     [buyBtn2 addTarget:self action:@selector(buyBtnClick2:) forControlEvents:UIControlEventTouchUpInside];
     
     // 标题
@@ -126,13 +138,14 @@
     
     // 选择课程
     UILabel * selectLabel = [UILabel new];
-    selectLabel.frame = CGRectMake(44, 44, kScreentWidth - 88, 44);
+    selectLabel.frame = CGRectMake(20, 44, kScreentWidth - 40, 44);
     [_buyView1 addSubview:selectLabel];
     selectLabel.font = [UIFont systemFontOfSize:15];
     selectLabel.textColor = kColor(0xB0B0B0);
     selectLabel.text = @"请选择让你购买的课程";
     
     // 价钱
+    _priceBtnArray = [NSMutableArray arrayWithCapacity:0];
     for (int i = 0; i < 4; i++) {
         
         CGFloat width = (kScreentWidth - 45) / 2;
@@ -142,7 +155,7 @@
         UILabel * label = [UILabel new];
         label.frame = CGRectMake(x, y + 12, width, 20);
         [_buyView1 addSubview:label];
-        label.text = @"1198";
+        label.text = [NSString stringWithFormat:@"%@元", _priceArray[i][@"price"]];
         label.textColor = kColor(0x1F1F1F);
         label.font = [UIFont systemFontOfSize:15];
         label.textAlignment = NSTextAlignmentCenter;
@@ -150,7 +163,7 @@
         UILabel * label2 = [UILabel new];
         label2.frame = CGRectMake(x, y + 12 + 20, width, 20);
         [_buyView1 addSubview:label2];
-        label2.text = @"1个月";
+        label2.text = _priceArray[i][@"month"];
         label2.textColor = kColor(0xB0B0B0);
         label2.font = [UIFont systemFontOfSize:10];
         label2.textAlignment = NSTextAlignmentCenter;
@@ -159,9 +172,10 @@
         btn.frame = CGRectMake(x, y, width, 64);
         [_buyView1 addSubview:btn];
         btn.layer.borderColor = kColor(0xFF4F53).CGColor;
-        btn.layer.borderWidth = 0.5;
+        btn.layer.borderWidth = 1;
         [btn addTarget:self action:@selector(selectMealBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        
+        btn.tag = 10 + i;
+        [_priceBtnArray addObject:btn];
     }
     
     // 实付金额
@@ -176,25 +190,33 @@
     moneyLabel2.frame = CGRectMake(kScreentWidth - 150, CGRectGetMinY(moneyLabel.frame), kScreentWidth - 20, 44);
     [_buyView1 addSubview:moneyLabel2];
     moneyLabel2.font = [UIFont systemFontOfSize:15];
-    moneyLabel2.text = @"8888元";
+    moneyLabel2.text = @"元";
     moneyLabel2.textColor = kGlobalColor;
+    _moneyLabel2 = moneyLabel2;
 }
 
 - (void)initBuyViwe2 {
     // 第二个购买页面
     _buyView2 = [UIView new];
-    CGFloat height2 = 44 * 5 + 20;
+    CGFloat height2 = 44 * 5;
     _buyView2.frame = CGRectMake(0, CGRectGetMaxY(_backgroundBtn.frame) - height2 - kMargin64 - kTabbarHeight, kScreentWidth, height2);
-//    [_backgroundBtn addSubview:_buyView2];
     _buyView2.backgroundColor = kWhiteColor;
+    [_backgroundBtn addSubview:_buyView2];
     
     UIButton * buyBtn3 = [UIButton buttonWithType:UIButtonTypeCustom];
     buyBtn3.frame = CGRectMake(0, _buyView2.frame.size.height - 44, kScreentWidth, 44);
     [_buyView2 addSubview:buyBtn3];
     buyBtn3.backgroundColor = kGlobalColor;
     buyBtn3.titleLabel.font = [UIFont systemFontOfSize:13];
-    [buyBtn3 setTitle:@"立即购买3" forState:UIControlStateNormal];
+    [buyBtn3 setTitle:@"立即购买" forState:UIControlStateNormal];
+    [buyBtn3 setBackgroundImage:kImageNamed(@"btn_background.png") forState:UIControlStateNormal];
     [buyBtn3 addTarget:self action:@selector(buyBtnClick3:) forControlEvents:UIControlEventTouchUpInside];
+    
+//    UIButton * backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    backBtn.frame = CGRectMake(10, 10, 27, 27);
+//    [_buyView2 addSubview:backBtn];
+//    [backBtn setImage:kImageNamed(@"back.png") forState:UIControlStateNormal];
+//    [backBtn addTarget:self action:@selector(backBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     // 标题
     UILabel * titleLabel2 = [UILabel new];
@@ -212,86 +234,161 @@
     
     // 微信支付
     UIImageView * weixinImageV = [UIImageView new];
-    weixinImageV.frame = CGRectMake(0, CGRectGetMaxY(titleLabel2.frame), 44, 44);
+    weixinImageV.frame = CGRectMake(7, CGRectGetMaxY(titleLabel2.frame) + 7, 30, 30);
     [_buyView2 addSubview:weixinImageV];
-    weixinImageV.backgroundColor = kGlobalColor;
+//    weixinImageV.backgroundColor = kGlobalColor;
+    weixinImageV.image = kImageNamed(@"weixin.png");
     
     UILabel * weixinLabel = [UILabel new];
-    weixinLabel.frame = CGRectMake(44, CGRectGetMaxY(titleLabel2.frame), kScreentWidth - 88, 44);
+    weixinLabel.frame = CGRectMake(54, CGRectGetMaxY(titleLabel2.frame), kScreentWidth - 88, 44);
     [_buyView2 addSubview:weixinLabel];
     weixinLabel.font = [UIFont systemFontOfSize:12];
     weixinLabel.text = @"微信支付";
     
+    UIButton * weixinBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    weixinBtn.frame = CGRectMake(0, CGRectGetMinY(weixinLabel.frame), kScreentWidth, 44);
+    [_buyView2 addSubview:weixinBtn];
+    [weixinBtn addTarget:self action:@selector(weixinBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    weixinBtn.layer.borderColor = kGlobalColor.CGColor;
+    _weixinBtn = weixinBtn;
+    
     // 分割线
     UIView * lineView3 = [UIView new];
-    lineView3.frame = CGRectMake(0, CGRectGetMaxY(weixinImageV.frame) - 1, kScreentWidth, 1);
+    lineView3.frame = CGRectMake(0, CGRectGetMaxY(weixinLabel.frame) - 1, kScreentWidth, 1);
     [_buyView2 addSubview:lineView3];
     lineView3.backgroundColor = kLineColor;
     
     // 支付宝支付
     UIImageView * zhifubaoImageV = [UIImageView new];
-    zhifubaoImageV.frame = CGRectMake(0, CGRectGetMaxY(weixinImageV.frame), 44, 44);
+    zhifubaoImageV.frame = CGRectMake(7, CGRectGetMaxY(weixinLabel.frame) + 7, 30, 30);
     [_buyView2 addSubview:zhifubaoImageV];
-    zhifubaoImageV.backgroundColor = kGlobalColor;
+//    zhifubaoImageV.backgroundColor = kGlobalColor;
+    zhifubaoImageV.image = kImageNamed(@"zhifubao.png");
     
     UILabel * zhifubaoLabel = [UILabel new];
-    zhifubaoLabel.frame = CGRectMake(44, CGRectGetMaxY(weixinImageV.frame), kScreentWidth - 88, 44);
+    zhifubaoLabel.frame = CGRectMake(54, CGRectGetMaxY(weixinLabel.frame), kScreentWidth - 88, 44);
     [_buyView2 addSubview:zhifubaoLabel];
     zhifubaoLabel.font = [UIFont systemFontOfSize:12];
     zhifubaoLabel.text = @"支付宝支付";
     
+    UIButton * zhifubaoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    zhifubaoBtn.frame = CGRectMake(0, CGRectGetMinY(zhifubaoLabel.frame), kScreentWidth, 44);
+    [_buyView2 addSubview:zhifubaoBtn];
+    [zhifubaoBtn addTarget:self action:@selector(zhifubaoBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    zhifubaoBtn.layer.borderColor = kGlobalColor.CGColor;
+    _zhifubaoBtn = zhifubaoBtn;
+    
     UILabel * moneyLabel3 = [UILabel new];
-    moneyLabel3.frame = CGRectMake(20, CGRectGetMaxY(zhifubaoImageV.frame), kScreentWidth - 20, 64);
+    moneyLabel3.frame = CGRectMake(20, CGRectGetMaxY(zhifubaoLabel.frame), kScreentWidth - 20, 44);
     [_buyView2 addSubview:moneyLabel3];
     moneyLabel3.font = [UIFont systemFontOfSize:13];
     moneyLabel3.text = @"实付金额";
     moneyLabel3.textColor = kColor(0xB0B0B0);
     
     UILabel * moneyLabel4 = [UILabel new];
-    moneyLabel4.frame = CGRectMake(kScreentWidth - 150, CGRectGetMinY(moneyLabel3.frame), kScreentWidth - 20, 64);
+    moneyLabel4.frame = CGRectMake(kScreentWidth - 150, CGRectGetMinY(moneyLabel3.frame), kScreentWidth - 20, 44);
     [_buyView2 addSubview:moneyLabel4];
     moneyLabel4.font = [UIFont systemFontOfSize:15];
-    moneyLabel4.text = @"8888元";
+    moneyLabel4.text = _moneyLabel2.text;
     moneyLabel4.textColor = kGlobalColor;
+    _moneyLabel4 = moneyLabel4;
     
     // 分割线
     UIView * lineView4 = [UIView new];
-    lineView4.frame = CGRectMake(0, CGRectGetMaxY(zhifubaoImageV.frame) - 1, kScreentWidth, 1);
+    lineView4.frame = CGRectMake(0, CGRectGetMaxY(zhifubaoLabel.frame) - 1, kScreentWidth, 1);
     [_buyView2 addSubview:lineView4];
     lineView4.backgroundColor = kLineColor;
+}
 
+#pragma mark - 返回选择套餐
+- (void)backBtnClick:(UIButton *)sender {
+    NSLog(@"backBtn...");
+    [self.view addSubview:_buyView1];
+}
+
+#pragma mark - 选择支付方式
+- (void)weixinBtnClick:(UIButton *)sender {
+    NSLog(@"weixinBtnClick");
+    _zhifubaoBtn.layer.borderWidth = 0;
+    _weixinBtn.layer.borderWidth = 2;
+    _payMethod = @"weixin";
+}
+
+- (void)zhifubaoBtnClick:(UIButton *)sender {
+    NSLog(@"zhifubaoBtnClick");
+    
+    _weixinBtn.layer.borderWidth = 0;
+    _zhifubaoBtn.layer.borderWidth = 2;
+    _payMethod = @"zhifubao";
 }
 
 #pragma mark - 选择套餐
 - (void)selectMealBtnClick:(UIButton *)sender {
     NSLog(@"selectMealBtnClick");
+    
+    for (UIButton * btn in _priceBtnArray) {
+        btn.layer.borderWidth = 1;
+    }
+    
+    sender.layer.borderWidth = 2;
+    _moneyLabel2.text = [NSString stringWithFormat:@"%@元", _priceArray[sender.tag-10][@"price"]];
 }
 
 #pragma mark - 取消支付
 - (void)backgroundBtnClick:(UIButton *)sender {
-    _backgroundBtn.hidden = !_backgroundBtn.hidden;
+    _backgroundBtn.hidden = YES;
     NSLog(@"backgroundBtnClick");
 }
 
-#pragma mark - 立即购买
+#pragma mark - 立即购买1
 - (void)buyBtnClick:(UIButton *)sender {
     NSLog(@"buyBtnClick");
     _backgroundBtn.hidden = NO;
 }
 
+#pragma mark - 立即购买3
+- (void)buyBtnClick3:(UIButton *)sender {
+    NSLog(@"buyBtnClick3");
+    if ([_payMethod isEqualToString:@"weixin"]) {
+        _backgroundBtn.hidden = YES;
+        NSLog(@"weixin zhifu");
+    } else if ([_payMethod isEqualToString:@"zhifubao"]) {
+        _backgroundBtn.hidden = YES;
+        NSLog(@"zhifubao zhifu");
+        [self zhifubaoPay];
+    } else {
+        [CLTool showAlert:@"请选择支付方式" target:self];
+    }
+}
+
+#pragma mark - 支付宝支付
+- (void)zhifubaoPay {
+    NSString * str = [NSString stringWithFormat:@"%@/order/creatOrder", kJGT];
+    [[AFHTTPSessionManager manager] GET:str parameters:@{@"courseId":self.courseId, @"payType":@"zhifubao"} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+
+        NSLog(@"zhifubaopay - %@", responseObject);
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            [[AlipaySDK defaultService] payOrder:[responseObject objectForKey:kData] fromScheme:@"WPProductOneAlipay" callback:^(NSDictionary *resultDic) {
+                NSLog(@"reslut = %@",resultDic);
+            }];
+        } else {
+            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
+}
+
+#pragma mark - 立即购买2
 - (void)buyBtnClick2:(UIButton *)sender {
     NSLog(@"buyBtnClick2");
     [_buyView1 removeFromSuperview];
     [_backgroundBtn addSubview:_buyView2];
+    _moneyLabel4.text = _moneyLabel2.text;
 }
 
-#pragma mark - 调走支付请求
-- (void)buyBtnClick3:(UIButton *)sender {
-    NSLog(@"buyBtnClick3");
-    _backgroundBtn.hidden = !_backgroundBtn.hidden;
-    [self doAlipayPay];
-}
-     
+
+#pragma mark - 支付字符串拼接
 - (void)doAlipayPay
 {
     //重要说明
