@@ -23,9 +23,8 @@
     UITableView * _moreTableView;
     UIImageView * _shutiaoImageView;
 
-    NSArray * _tableViewArray;
+    NSMutableArray * _tableViewArray;
     NSMutableArray * _moduleBtns;
-    NSArray * _moduleTitles;
     NSMutableArray * _dataSources;
 }
 @end
@@ -68,28 +67,27 @@
     NSLog(@"viewDidLoad");
     // Do any additional setup after loading the view.
     
-    _moduleBtns = [NSMutableArray new];
-    _moduleTitles = @[@"stock", @"fund", @"metal", @"foreign", @"analyze", @"bond", @"counselor", @"more"];
+    _moduleBtns = [NSMutableArray arrayWithCapacity:0];
+    _tableViewArray = [NSMutableArray arrayWithCapacity:0];
     
     NSLog(@"selectedBtnIndex  - %ld", self.selectedIndex);
+    
+    // 初始视图
+    [self initView];
     
     // 初始数据源
     _dataSources = [[NSMutableArray alloc] init];
     
-    for (NSInteger i = 0; i < _moduleTitles.count; i++) {
+    for (NSInteger i = 0; i < self.moduleBtnTitleArr.count; i++) {
         NSMutableArray * mArr = [[NSMutableArray alloc] init];
         [_dataSources addObject:mArr];
     }
     
-    // 获取数据
-    [self getDataSource:@"stock"];
-    
+    [self updateDataSource:0];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    // 按钮的切换
-    [self btnClick:_moduleBtns[self.selectedIndex]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -99,14 +97,6 @@
     // 隐藏导航栏
     self.navigationController.navigationBar.hidden = YES;
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    // 初始视图
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [self initView];
-    });
-    
-    
 }
 
 #pragma mark - 初始视图
@@ -119,7 +109,7 @@
     
     // 自定义导航栏
     UIView * navView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenRect.size.width, kBatteryHeight + kNavgationBarHeight)];
-    navView.backgroundColor = kGlobalColor;
+    [CLTool gradualBackgroundColor:navView];
     [self.view addSubview:navView];
     
     // 定制
@@ -134,28 +124,38 @@
     // ------------------- 1. 左侧选项 -------------------
 //    NSArray * titles = @[@"股票", @"外汇", @"基金", @"债券", @"贵金属", @"股指期货", @"商品期货"];
 //    NSArray * moduleImages = @[@"stock.png", @"fund.png", @"metal.png", @"foreign.png", @"analyze.png", @"bond.png", @"counselor.png", @"more.png"];
-    NSArray * titles = @[@"股票", @"基金", @"贵金属", @"外汇", @"分析", @"债券", @"顾问", @"更多"];
-    NSInteger count = titles.count;
+//    NSArray * titles = @[@"股票", @"基金", @"贵金属", @"外汇", @"分析", @"债券", @"顾问", @"更多"];
+    NSInteger count = self.moduleBtnTitleArr.count;
     for (int i = 0; i < count; i++) {
+        
+        NSDictionary * dic = self.moduleBtnTitleArr[i];
+        
+        UILabel * label = [UILabel new];
+        label.frame = CGRectMake(15, i * 44 + 64, 98 - 30, 44);
+        label.backgroundColor = kClearColor;
+        label.text = dic[@"cateName"];
+        [self.view addSubview:label];
+        label.font = [UIFont systemFontOfSize:15];
+        [CLTool labelAlightLeftAndRight:label];
+        
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        btn.frame = CGRectMake(0, i * 44 + 64, 98, 44);
+        btn.frame = label.frame;
         [self.view addSubview:btn];
         [btn setTitleColor:kColor(0x1F1F1F) forState:UIControlStateNormal];
-        [btn setTitle:titles[i] forState:UIControlStateNormal];
+//        [btn setTitle:dic[@"cateName"] forState:UIControlStateNormal];
         [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
         btn.tag = 10 + i;
-        btn.titleLabel.font = [UIFont systemFontOfSize:13];
         [_moduleBtns addObject:btn];
         self.moduleBtns = _moduleBtns;
-        
     }
     
     _shutiaoImageView = [UIImageView new];
-    _shutiaoImageView.frame = CGRectMake(0, (44-20)/2 + 64, 3, 20);
+    _shutiaoImageView.frame = CGRectMake(0, 44 * self.selectedIndex + (44-20)/2 + 64, 3, 20);
     [self.view addSubview:_shutiaoImageView];
     _shutiaoImageView.image = [UIImage imageNamed:@"shutiao.png"];
     
     // ------------------- 2. 右侧列表 -------------------
+    /*
     _stockTableView = [self createTableView];
     _stockTableView.tag = 20;
     
@@ -179,37 +179,40 @@
     
     _moreTableView = [self createTableView];
     _moreTableView.tag = 27;
+    */
     
-    _tableViewArray = @[_stockTableView, _fundTableView, _metalTableView, _foreignTableView, _analyzeTableView, _bondTableView, _counselorTableView, _moreTableView];
+    for (NSInteger i = 0; i < self.moduleBtnTitleArr.count; i++) {
+        UITableView * tableView = [self createTableView];
+        tableView.tag = 20 + i;
+        [_tableViewArray addObject:tableView];
+    }
+    
+//    _tableViewArray = @[_stockTableView, _fundTableView, _metalTableView, _foreignTableView, _analyzeTableView, _bondTableView, _counselorTableView, _moreTableView];
 }
 
 - (void)btnClick:(UIButton *)sender {
-    NSInteger value = sender.tag - 10;
-    _shutiaoImageView.frame = CGRectMake(0, 44*value + (44-20)/2 + 64, 3, 20);
     
-    // 更新界面
-    [self.view bringSubviewToFront:_tableViewArray[value]];
+    NSInteger value = sender.tag - 10;
     
     // 更新数据
-    [self getDataSource:_moduleTitles[value]];
+    [self updateDataSource:value];
+}
+
+- (void)updateDataSource:(NSInteger)selectedIndex {
     
-//    if (value == 0) {
-//        [self.view bringSubviewToFront:_stockTableView];
-//    } else if (value == 1) {
-//        [self.view bringSubviewToFront:_fundTableView];
-//    } else if (value == 2) {
-//        [self.view bringSubviewToFront:_metalTableView];
-//    } else if (value == 3) {
-//        [self.view bringSubviewToFront:_foreignTableView];
-//    } else if (value == 4) {
-//        [self.view bringSubviewToFront:_analyzeTableView];
-//    } else if (value == 5) {
-//        [self.view bringSubviewToFront:_bondTableView];
-//    } else if (value == 6) {
-//        [self.view bringSubviewToFront:_counselorTableView];
-//    } else if (value == 7) {
-//        [self.view bringSubviewToFront:_moreTableView];
-//    }
+    NSLog(@"updateDataSource - %ld", selectedIndex);
+    
+    // 更新竖条位置
+    _shutiaoImageView.frame = CGRectMake(0, 44 * selectedIndex + (44-20)/2 + 64, 3, 20);
+    
+    // 更新界面
+    if (_tableViewArray.count > 0) {
+        
+        [self.view bringSubviewToFront:_tableViewArray[selectedIndex]];
+        [self getDataSource:_moduleBtnTitleArr[selectedIndex][@"id"]];
+    }
+    
+    // 更新数据
 }
 
 
@@ -277,15 +280,10 @@
         [cell.tagBtn2 setTitle:dic[@"tag2"] forState:UIControlStateNormal];
         cell.descLbl.text = dic[@"introduction"];
         cell.followLabel.text = [NSString stringWithFormat:@"关注人数: %@人", dic[@"attentionNum"]];
-        cell.downloadLabel.text = [NSString stringWithFormat:@"关注人数: %@人", dic[@"downPoint"]];
-        cell.dealLabel.text = [NSString stringWithFormat:@"关注人数: %@人", dic[@"trin"]];
-        cell.stateLabel.text = dic[@"lectState"];
-        if ([dic[@"lectState"] isEqualToString:@"在线"]) {
-            cell.stateLabel.textColor = kColor(0x4990E2);
-        } else {
-            cell.stateLabel.textColor = kGlobalColor;
-        }
-        
+        cell.dealLabel.text = [NSString stringWithFormat:@"交易指数: %@%%", dic[@"trin"]];
+        NSString * downStr = dic[@"downPoint"];
+        CGFloat downStr2 = [downStr floatValue];
+        cell.downloadLabel.text = [NSString stringWithFormat:@"下载指数: %.1f分", downStr2];
     }
     return cell;
 }

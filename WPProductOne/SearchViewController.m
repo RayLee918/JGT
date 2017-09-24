@@ -43,7 +43,7 @@
     
     UIView * searchView = [UIView new];
     searchView.frame = CGRectMake(0, 0, kScreentWidth, 64);
-    searchView.backgroundColor = kGlobalColor;
+    [CLTool gradualBackgroundColor:searchView];
     [self.view addSubview:searchView];
     
     UIView * backgroudView = [UIView new];

@@ -11,5 +11,8 @@
 @interface CardCell : UITableViewCell
 
 @property (nonatomic, strong) UIImageView * cardImageView;
+@property (nonatomic, strong) UILabel * bankLabel;
+@property (nonatomic, strong) UILabel * typeLabel;
+@property (nonatomic, strong) UILabel * cardNumberLabel;
 
 @end

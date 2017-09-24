@@ -10,4 +10,6 @@
 
 @interface SubscribeViewController : UIViewController
 
+@property (nonatomic, strong) NSString * userId;
+
 @end

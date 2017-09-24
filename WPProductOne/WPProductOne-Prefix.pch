@@ -23,9 +23,12 @@
 #import "ClearCacheTool.h"
 #import "UMSocialQQHandler.h"
 #import <UMSocialCore/UMSocialCore.h>
+#import <UShareUI/UShareUI.h>
 #import <AlipaySDK/AlipaySDK.h>
 #import "Order.h"
 #import "RSADataSigner.h"
+#import "WXApi.h"
+#import "MBProgressHUD.h"
 
 // ------------------- 尺寸 -------------------
 // 屏幕尺寸
@@ -92,6 +95,7 @@
 
 // 支付
 #define kAlipayAppID @"2017090508569498"
+//#define kAlipayAppID @"2017071507768519"
 #define kAlipayPrivateKey @"MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCI2cPXLdfWeaEK+FjvbKJRQMtNymrh8wOS7f1I46/Mcug8rUtvnC8pDwOCdbKAYeLlHQPmMplVSVXHWvi5Iq0F9XVh+0O3HyNw9IA2CM4w8ojKKWfQTGzyVlxawiVMShX8oQF4op/BGWoX0voa9Oxad6WCbdu3eAhuaBpU/2boo2FpO7AnxuhPtB2yU5U6bmkwkKwYaayWz5LGKh3Bngxr79oY6nIAM0k2Yp+C9GDOy0wG2zM4SOyIqi7SbcbWixf/d3HAnae98d7X6nUjJfrM2HZAXJCvzzig/0a3qKnKCS6HnjLNci+6l/rt0r566UMoARsMepMPj9oOxCS/m5iBAgMBAAECggEAJIg1foDPaILJmdsYKroOTrCEVTze8XhlENkVT1rwuBxIoMIGLEI+WLCYWEBBKYJ4Bn+LZe1F/313N6OyWAHIvJl8/24K8pyOYn3yp/oLyQdFuun4u6NbRgoF13iSal4wpmL4uJJ5IRw+tSNt/ro5SiE8fqgDCmQxo/+IX/5aI2nt7I6u27I1im0v/pFLii09YVk3VnpbUI2cE24RAldrVGrhJz+rNE7L3PlSiObjxkh/7d0bJ5RUlq+jslOrdvwD9QXVa/dqCA5UfEHivR392kd9Kig5osKQLebrTjLEh/bwxYjc0CZxQdxETT36fQKi/YOp27eOTT0I7CTigkoAAQKBgQDE5VnLTEA8pWxgaX6PelRDkbL03oXZ24YHJ5BRe8SaGXfVTB/RP+5jyOWO/HMu+FOYyK1rhizDnAnks5D6+R//F4//CVg4l8Roxao69SEcezRvlJ7hSr92bh9xzlqp+Xe+H+Oi9zD6bbROLRbP6Nj6xg4MIZaQID39X7dOhLaWgQKBgQCx7i4ynESG7XpRk46uZo2MHUjJxTK9mmxY9dqSGghdLiH0hsbCHTOkRXrY+egvSgS2gCwJ2uJm5M8UWH7bbLH6rI6Es9W+DoLZm/vKOXr8BPmIiq4LtoinwCMypaRK5je6wwrgPmRsW+UXgYf5ltUBZZzZ7UFPQyVYy9IqIbgCAQKBgQCqZDyoBY3VreazLLhc3CVN8CmpZWT6WtKLIH7xNSW3ofClQuKKCER6UCHw8qGPdVGK96e0VIIqqb+aDpeZybwZ2r8/m0ugdh5/+QdPTFFiP3DqWvh/yVsV10kZCNZHIF+yxhAOONNG9WdC/BwwwrX7lygS8YJFqdFbktikd483gQKBgQCD49yksUbuiSupOmqCBgyYNsDUp3MELmpvytXYhKl8gIy02A6Opty3wLTeDui33PL/YKTELVazFJoXJ73o4npPKQd/gFpIxjLiIQiUDuWF2B4rwzheAFDtn7O3gCb3Sg03SApQzI7d74QyV1a2gMKlhW+t7nsByPDvEC5aAqKGAQKBgA3zbvvbXPHeUeur8B8F5gch5VeRTLqJTdIMVgQA5iqGxLzIRaTMwKtDVfRDfL6XbZpWTinv53aVTXi5lGXTqoCioePSKKOhNpZ3fHGhRXahFTWa8VFtzNmZK98Vw5eLkr+/OxNvPxBzCrYCOS5/ujB+jBH70j/SrLEJCSMzqp5m"
 
 // 用到的key
@@ -109,6 +113,9 @@
 #define kSubscriptionNum @"subscriptionNum"
 #define kMac @"mac"
 #define kIsLecturer @"isLecturer"
+#define kIsIndentify @"isIndentify"
+#define kId @"id"
+#define kIdNumber @"idNumber"
 
 // NSUserDefaults
 #define kToken  @"token"

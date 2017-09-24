@@ -8,7 +8,7 @@
 
 #import "BuyViewController.h"
 
-@interface BuyViewController ()
+@interface BuyViewController () <WXApiDelegate>
 {
     UIButton * _backgroundBtn;
     UIView * _buyView1;
@@ -30,8 +30,9 @@
     // Do any additional setup after loading the view.
     
     _payMethod = @"";
-//    _priceArray = @[@{@"month":@"1个月", @"price":@"1"}, @{@"month":@"2个月", @"price":@"2"}, @{@"month":@"3个月", @"price":@"3"}, @{@"month":@"4个月", @"price":@"4"}];
     [self initView];
+    
+//    _priceArray = @[@{@"month":@"1个月", @"price":@"1"}, @{@"month":@"2个月", @"price":@"2"}, @{@"month":@"3个月", @"price":@"3"}, @{@"month":@"4个月", @"price":@"4"}];
 //    [self initBuyView1];
     [self initBuyViwe2];
     
@@ -66,8 +67,7 @@
     UIButton * buyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     buyBtn.frame = CGRectMake(0, kScreentHeight - kMargin64 - kTabbarHeight - 44, kScreentWidth, 44);
     [self.view addSubview:buyBtn];
-//    buyBtn.backgroundColor = kGlobalColor;
-    [buyBtn setBackgroundImage:kImageNamed(@"btn_background.png") forState:UIControlStateNormal];
+    [CLTool gradualBackgroundColor:buyBtn];
     buyBtn.titleLabel.font = [UIFont systemFontOfSize:13];
     [buyBtn setTitle:@"立即购买" forState:UIControlStateNormal];
     [buyBtn addTarget:self action:@selector(buyBtnClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -120,7 +120,7 @@
     buyBtn2.titleLabel.font = [UIFont systemFontOfSize:13];
     [buyBtn2 setTitle:@"立即购买" forState:UIControlStateNormal];
     [buyBtn2 setBackgroundImage:kImageNamed(@"btn_background.png") forState:UIControlStateNormal];
-    [buyBtn2 addTarget:self action:@selector(buyBtnClick2:) forControlEvents:UIControlEventTouchUpInside];
+//    [buyBtn2 addTarget:self action:@selector(buyBtnClick2:) forControlEvents:UIControlEventTouchUpInside];
     
     // 标题
     UILabel * titleLabel = [UILabel new];
@@ -205,11 +205,10 @@
     
     UIButton * buyBtn3 = [UIButton buttonWithType:UIButtonTypeCustom];
     buyBtn3.frame = CGRectMake(0, _buyView2.frame.size.height - 44, kScreentWidth, 44);
+    [CLTool gradualBackgroundColor:buyBtn3];
     [_buyView2 addSubview:buyBtn3];
-    buyBtn3.backgroundColor = kGlobalColor;
     buyBtn3.titleLabel.font = [UIFont systemFontOfSize:13];
     [buyBtn3 setTitle:@"立即购买" forState:UIControlStateNormal];
-    [buyBtn3 setBackgroundImage:kImageNamed(@"btn_background.png") forState:UIControlStateNormal];
     [buyBtn3 addTarget:self action:@selector(buyBtnClick3:) forControlEvents:UIControlEventTouchUpInside];
     
 //    UIButton * backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -289,7 +288,6 @@
     moneyLabel4.frame = CGRectMake(kScreentWidth - 150, CGRectGetMinY(moneyLabel3.frame), kScreentWidth - 20, 44);
     [_buyView2 addSubview:moneyLabel4];
     moneyLabel4.font = [UIFont systemFontOfSize:15];
-    moneyLabel4.text = _moneyLabel2.text;
     moneyLabel4.textColor = kGlobalColor;
     _moneyLabel4 = moneyLabel4;
     
@@ -300,12 +298,14 @@
     lineView4.backgroundColor = kLineColor;
 }
 
+/*
 #pragma mark - 返回选择套餐
 - (void)backBtnClick:(UIButton *)sender {
     NSLog(@"backBtn...");
     [self.view addSubview:_buyView1];
 }
-
+*/
+ 
 #pragma mark - 选择支付方式
 - (void)weixinBtnClick:(UIButton *)sender {
     NSLog(@"weixinBtnClick");
@@ -323,6 +323,7 @@
 }
 
 #pragma mark - 选择套餐
+/*
 - (void)selectMealBtnClick:(UIButton *)sender {
     NSLog(@"selectMealBtnClick");
     
@@ -333,6 +334,7 @@
     sender.layer.borderWidth = 2;
     _moneyLabel2.text = [NSString stringWithFormat:@"%@元", _priceArray[sender.tag-10][@"price"]];
 }
+*/
 
 #pragma mark - 取消支付
 - (void)backgroundBtnClick:(UIButton *)sender {
@@ -342,25 +344,121 @@
 
 #pragma mark - 立即购买1
 - (void)buyBtnClick:(UIButton *)sender {
-    NSLog(@"buyBtnClick");
     _backgroundBtn.hidden = NO;
 }
+
+/*
+- (void)buyBtnClick:(UIButton *)sender {
+    if (![self.courseName isEqual:[NSNull null]]) {
+        NSLog(@"null != nil");
+        if ([self isFileExist:self.courseName]) {
+            NSLog(@"buyBtnClick - 1");
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *path = [paths objectAtIndex:0];
+            NSString *filePath = [path stringByAppendingPathComponent:self.courseName];
+            [self loadDocument:filePath];
+        } else {
+            NSLog(@"buyBtnClick - 2");
+            _backgroundBtn.hidden = NO;
+        }
+    } else {
+        NSLog(@"null = nil");
+        [CLTool showAlert:@"还没有上传该文档" target:self];
+    }
+}
+*/
 
 #pragma mark - 立即购买3
 - (void)buyBtnClick3:(UIButton *)sender {
     NSLog(@"buyBtnClick3");
+    
     if ([_payMethod isEqualToString:@"weixin"]) {
         _backgroundBtn.hidden = YES;
         NSLog(@"weixin zhifu");
+        [self payMethod:_payMethod];
+        
     } else if ([_payMethod isEqualToString:@"zhifubao"]) {
         _backgroundBtn.hidden = YES;
         NSLog(@"zhifubao zhifu");
-        [self zhifubaoPay];
+        [self payMethod:_payMethod];
+        
     } else {
         [CLTool showAlert:@"请选择支付方式" target:self];
     }
 }
 
+#pragma mark - 发起支付请求
+- (void)payMethod:(NSString *)payMethod {
+    NSString * str = [NSString stringWithFormat:@"%@/order/creatOrder", kJGT];
+    [[AFHTTPSessionManager manager] GET:str parameters:@{@"courseId":self.courseId, @"payType":@"weixin"} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+                if ([payMethod isEqualToString:@"weixin"]) {
+                    NSDictionary * dic = [responseObject objectForKey:kData];
+                    PayReq * request = [[PayReq alloc] init];
+                    request.partnerId = dic[@"partnerId"];
+                    request.prepayId = dic[@"prepayId"];
+                    request.package = dic[@"package"];
+                    request.nonceStr = dic[@"nonceStr"];
+                    request.timeStamp = [dic[@"timeStamp"] intValue];
+                    request.sign = dic[@"sign"];
+                    
+                    // 发起微信支付请求
+                    BOOL isSuccessSendReq = [WXApi sendReq:request];
+                    NSLog(@"isSuccessSendReq - %d", isSuccessSendReq);
+                } else if ([payMethod isEqualToString:@"zhifubao"]) {
+                    
+                    [[AlipaySDK defaultService] payOrder:[responseObject objectForKey:kData] fromScheme:@"WPProductOneAlipay" callback:^(NSDictionary *resultDic) {
+                        NSLog(@"reslut = %@",resultDic);
+                        /*
+                         // 调用支付宝返回的信息
+                         reslut = {
+                         memo = "";
+                         result = "";
+                         resultStatus = 6001;
+                         }
+                         */
+                        
+                        // 支付成功
+                        if ([resultDic[@"resultStatus"] isEqualToString:@"9000"]) {
+                            NSLog(@"zhifubao - buy - 支付成功");
+                            [CLTool showAlert:@"课程购买成功" target:self];
+                        } else {
+                            NSLog(@"zhifubao - buy - 支付失败");
+                            [CLTool showAlert:@"支付失败" target:self];
+                        }
+                    }];
+                    
+                } else {
+                    [CLTool showAlert:@"不支持的支付方式" target:self];
+                }
+        } else {
+            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
+}
+
+#pragma mark - 微信支付回调
+-(void)onResp:(BaseResp *)resp {
+    if ([resp isKindOfClass:[PayResp class]]){
+        PayResp * response=(PayResp *)resp;
+        switch(response.errCode){
+            case WXSuccess:
+                //服务器端查询支付通知或查询API返回的结果再提示成功
+                NSLog(@"weixin - buy - 支付成功, %@", resp);
+                [CLTool showAlert:@"课程购买成功" target:self];
+                break;
+            default:
+                NSLog(@"weixin - buy - 支付失败, %@, retcode=%d", resp, resp.errCode);
+                [CLTool showAlert:@"支付失败" target:self];
+                break;
+        }
+    }
+}
+
+/*
 #pragma mark - 支付宝支付
 - (void)zhifubaoPay {
     NSString * str = [NSString stringWithFormat:@"%@/order/creatOrder", kJGT];
@@ -370,6 +468,21 @@
         if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
             [[AlipaySDK defaultService] payOrder:[responseObject objectForKey:kData] fromScheme:@"WPProductOneAlipay" callback:^(NSDictionary *resultDic) {
                 NSLog(@"reslut = %@",resultDic);
+ 
+                 // 调用支付宝返回的信息
+                 // reslut = {
+                 //    memo = "";
+                 //    result = "";
+                 //    resultStatus = 6001;
+                 // }
+ 
+                // 支付成功
+                if ((1)) {
+                    // 下载文档
+                    [self paySuccess];
+                } else {
+                    [CLTool showAlert:@"支付失败" target:self];
+                }
             }];
         } else {
             [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
@@ -378,15 +491,32 @@
         
     }];
 }
+*/
 
+#pragma mark - 下载文档, 打开文档
+- (void)paySuccess {
+    NSString * str = [NSString stringWithFormat:@"%@/order/payOrder", kJGT];
+    NSDictionary * user = [[NSUserDefaults standardUserDefaults] objectForKey:kUser];
+    NSString * userId = user[kUserID];
+    NSDictionary * params = @{@"courseId":self.courseId, @"payType":@"zhifubao", kUserID:userId, @"item":@""};
+    NSLog(@"zhifubao - sucess - %@", params);
+    [[AFHTTPSessionManager manager] GET:str parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+
+    }];
+    [self downloadFile:self.courseName];
+}
+
+/*
 #pragma mark - 立即购买2
 - (void)buyBtnClick2:(UIButton *)sender {
     NSLog(@"buyBtnClick2");
     [_buyView1 removeFromSuperview];
     [_backgroundBtn addSubview:_buyView2];
-    _moneyLabel4.text = _moneyLabel2.text;
+    _moneyLabel4.text = [NSString stringWithFormat:@"%@元", _priceArray[sender.tag-10][@"price"]];
 }
-
+*/
 
 #pragma mark - 支付字符串拼接
 - (void)doAlipayPay
@@ -483,6 +613,7 @@
         // NOTE: 调用支付结果开始支付
         [[AlipaySDK defaultService] payOrder:orderString fromScheme:appScheme callback:^(NSDictionary *resultDic) {
             NSLog(@"reslut = %@",resultDic);
+            
         }];
     }
 }
@@ -508,6 +639,78 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - 下载的文档处理
+//下载文件
+- (void)downloadFile:(NSString *)downLoadUrl{
+    
+    NSURL * url = [NSURL URLWithString:[NSString stringWithFormat:@"http://192.168.1.131:8080/jgt/downLoad/download?fileid=%@", self.courseName]];
+    NSURLRequest * request = [NSURLRequest requestWithURL:url];
+    
+    NSURLSessionDownloadTask * task = [[AFHTTPSessionManager manager] downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress) {
+        NSLog(@"progress - - %lld, %lld", downloadProgress.completedUnitCount, downloadProgress.totalUnitCount);
+    } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+        
+        NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+        return [documentsDirectoryURL URLByAppendingPathComponent:self.courseName];
+        
+    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+        [self loadDocument:filePath.relativePath];
+    }];
+    [task resume];
+}
+
+// 下载文件或者打开文件
+- (void)downloadPDF:(NSString *)downloadUrl {
+    NSArray * arr = [downloadUrl componentsSeparatedByString:@"="];
+    NSString * fileName = [arr lastObject];
+    if ([self isFileExist:fileName]) {
+        NSLog(@"存在");
+        //获取Documents 下的文件路径
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *path = [paths objectAtIndex:0];
+        NSString *filePath = [path stringByAppendingPathComponent:fileName];
+        [self loadDocument:filePath];
+    } else {
+        NSLog(@"不存在");
+        [self downloadFile:downloadUrl];
+    }
+}
+
+
+// 下载好的文件用UIWebView显示
+-(void)loadDocument:(NSString *)documentName
+{
+    NSLog(@"loadDocument - %@", documentName);
+    UIWebView *webView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, kScreentWidth, kScreentHeight - kTabbarHeight)];
+    webView.backgroundColor = kWhiteColor;
+    
+    [self.view addSubview:webView];
+    
+    NSURL *url = [NSURL fileURLWithPath:documentName];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    [webView loadRequest:request];
+}
+
+// 判断沙盒中是还存在此文件
+-(BOOL) isFileExist:(NSString *)fileName
+{
+    //获取Documents 下的文件路径
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *path = [paths objectAtIndex:0];
+    
+    NSString *filePath = [path stringByAppendingPathComponent:fileName];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    BOOL result = [fileManager fileExistsAtPath:filePath];
+    
+    NSLog(@"这个文件已经存在：%@",result?@"是的":@"不存在");
+    
+    return result;
+}
 /*
 #pragma mark - Navigation
 

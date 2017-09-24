@@ -22,16 +22,33 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    
-    
-    _dataSource = @[@{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-5200", @"desc":@"购买萨达所VIP课程"},
-                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"+800", @"desc":@"提现交易-快速到帐"},
-                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-688", @"desc":@"购买马芸讲师VIP课程"},
-                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-26", @"desc":@"购买萨达所VIP课程"},
-                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-68", @"desc":@"购买刘旺讲师VIP课程"},
-                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"+266", @"desc":@"马化腾-转帐"}
-                      ];
+//    _dataSource = @[@{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-5200", @"desc":@"购买萨达所VIP课程"},
+//                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"+800", @"desc":@"提现交易-快速到帐"},
+//                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-688", @"desc":@"购买马芸讲师VIP课程"},
+//                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-26", @"desc":@"购买萨达所VIP课程"},
+//                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"-68", @"desc":@"购买刘旺讲师VIP课程"},
+//                    @{@"date":@"今天", @"time":@"12:12", @"cardImage":@"card1.png", @"money":@"+266", @"desc":@"马化腾-转帐"}
+//                      ];
     [self initView];
+    [self getBillData];
+}
+
+- (void)getBillData {
+    NSString * urlStr = [NSString stringWithFormat:@"%@/center/user/billInfo", kJGT];
+    [[AFHTTPSessionManager manager] GET:urlStr parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"bill - %@", responseObject);
+        if ([CLTool isHaveData:responseObject]) {
+            _dataSource = [responseObject objectForKey:kData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_tableView reloadData];
+            });
+        } else {
+            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -90,10 +107,11 @@
     }
     
     NSDictionary * dic = _dataSource[indexPath.row];
-    cell.dateLabel.text = dic[@"date"];
-    cell.timeLabel.text = dic[@"time"];
-    cell.moneyLabel.text = dic[@"money"];
-    cell.descLabel.text = dic[@"desc"];
+    NSString * str = (NSString *)dic[@"ctsStr"];
+    cell.dateLabel.text = [str substringToIndex:11];
+    cell.timeLabel.text = [str substringFromIndex:12];
+    cell.moneyLabel.text = [NSString stringWithFormat:@"%@", dic[@"amount"]];
+    cell.descLabel.text = dic[@"purpose"];
     
     return cell;
 }

@@ -12,6 +12,7 @@
 #import "CalendarViewController.h"
 #import "SearchViewController.h"
 #import "CCCycleScrollView.h"
+#import "CalendarController.h"
 
 // 模块引入
 #import "StockViewController.h"
@@ -55,7 +56,14 @@
     
     NSTimer * _timer;
     
-    
+    // 模块开发
+    NSMutableArray * _moduleBtnArr;
+    NSMutableArray * _moduleBtnTitleArr;
+    NSMutableArray * _moduleBtnLabelArr;
+
+    // 标题
+    UILabel * _titleLabel;
+    NSArray * _titleArray;
 }
 @end
 
@@ -66,11 +74,60 @@
     // Do any additional setup after loading the view.//    self.view.backgroundColor = [UIColor colorWithRed:(((0xFF4F53 & 0xFF0000) >> 16))/255.0 green:(((0xFF4F53 &0xFF00) >>8))/255.0 blue:((0xFF4F53 &0xFF))/255.0 alpha:1.0];
     _homeDataSource = [NSArray array];
     _teacherDataSource = [NSArray array];
+    _moduleBtnArr = [NSMutableArray arrayWithCapacity:0];
+    _moduleBtnTitleArr = [NSMutableArray arrayWithCapacity:0];
+    _moduleBtnLabelArr = [NSMutableArray arrayWithCapacity:0];
     [self getHomeNewsData];
     [self getTeacherData];
-    /*
-     
-     */
+    
+    // 初始视图
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self initView];
+    });
+    [self getModuleData];
+    NSLog(@"home - viewDidLoad");
+}
+
+#pragma mark - 模块按钮动态数据
+- (void)getModuleData {
+    
+    NSString * urlStr = [NSString stringWithFormat:@"%@/home/getCategoryList", kJGT];
+    [[AFHTTPSessionManager manager] GET:urlStr parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            _moduleBtnTitleArr = [NSMutableArray arrayWithArray:[responseObject objectForKey:kData]];
+            _titleArray = @[@"123456789", @"987654321", @"abcdefghi"];
+            
+            self.customVC.moduleBtnTitleArr = _moduleBtnTitleArr;
+            NSInteger value = 0;
+            if (_moduleBtnLabelArr.count >=8) {
+                value = 8;
+            } else {
+                value = _moduleBtnLabelArr.count;
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // 更新列表
+                for (NSInteger i = 0; i < value; i++) {
+                    UILabel * label = _moduleBtnLabelArr[i];
+                    NSDictionary * dic = _moduleBtnTitleArr[i];
+                    label.text = dic[@"cateName"];
+                }
+                
+                // 更新标题
+                if (_titleArray.count >= 1) {
+//                    [NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) {
+//                        unsigned int index = arc4random() % _titleArray.count;
+//                        _titleLabel.text = _titleArray[index];
+//                    }];
+                }
+            });
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        [CLTool showAlert:@"获取数据失败" target:self];
+    }];
+//    _moduleBtnTitleArr = [NSMutableArray arrayWithArray:@[@"股票", @"基金", @"贵金属", @"外汇", @"分析", @"债券", @"顾问", @"更多", @"商品期货", @"股指期货"]];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -91,6 +148,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    NSLog(@"home - viewWillAppear");
+    
     self.navigationController.navigationBar.hidden = YES;
     self.view.backgroundColor = [UIColor whiteColor];
 
@@ -99,12 +158,6 @@
     } else {
         [self teacherBtnClick:nil];
     }
-    
-    // 初始视图
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [self initView];
-    });
 }
 
 // 在需要进行获取登录信息的UIViewController中加入如下代码
@@ -135,18 +188,21 @@
 #pragma mark 请求首页数据, 刷新数据
 - (void)getHomeNewsData {
     
-    NSLog(@"homedata - ");
+    
     NSString * urlStr = [NSString stringWithFormat:@"%@/home/newestState", kJGT];
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     [manager GET:urlStr parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        _homeDataSource = [responseObject objectForKey:kData];
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            NSLog(@"homedata - %@", responseObject);
+            _homeDataSource = [responseObject objectForKey:kData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_tableView reloadData];
+            });
+        }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_tableView reloadData];
-        });
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"error - %@", error);
@@ -161,12 +217,14 @@
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-        _teacherDataSource = [responseObject objectForKey:kData];
-//        NSLog(@"teacherData - %@", _homeDataSource);
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_teacherTableView reloadData];
-        });
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            
+            _teacherDataSource = [responseObject objectForKey:kData];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_teacherTableView reloadData];
+            });
+        }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"error - %@", error);
@@ -190,9 +248,8 @@
     
     // 自定义导航栏
     UIView * navView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenRect.size.width, kBatteryHeight + kNavgationBarHeight)];
-//    navView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background_up.png"]];
-    navView.backgroundColor = kGlobalColor;
     [self.view addSubview:navView];
+    [CLTool gradualBackgroundColor:navView];
     
     // 首页
     UILabel * homeLabel = [[UILabel alloc] init];
@@ -239,11 +296,11 @@
     _baitiaoCenten2 = CGPointMake(teacherBtn.center.x, CGRectGetMaxY(homeBtn.frame));
     
     // 日历
-//    UIButton * calendarBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    CGFloat calendarBtnY = navView.frame.size.height - 44;
-//    calendarBtn.frame = CGRectMake(0, calendarBtnY, 44, 44);
-//    [calendarBtn setImage:[UIImage imageNamed:@"calendar.png"] forState:UIControlStateNormal];
-//    [calendarBtn addTarget:self action:@selector(calendarBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    UIButton * calendarBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    CGFloat calendarBtnY = navView.frame.size.height - 44;
+    calendarBtn.frame = CGRectMake(0, calendarBtnY, 44, 44);
+    [calendarBtn setImage:[UIImage imageNamed:@"calendar.png"] forState:UIControlStateNormal];
+    [calendarBtn addTarget:self action:@selector(calendarBtnClick:) forControlEvents:UIControlEventTouchUpInside];
 //    [navView addSubview:calendarBtn];
     
     // 搜索
@@ -283,6 +340,8 @@
      25BC=▼
      25C4=◄
      */
+    
+    /*
     UIButton * sortAllBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     sortAllBtn.frame = CGRectMake(kScreentWidth, 0, kScreentWidth/2, 32);
     [_scrollView addSubview:sortAllBtn];
@@ -300,7 +359,23 @@
     [sortPriceBtn setTitle:@"价格排序\u25bc" forState:UIControlStateNormal];
     [sortPriceBtn addTarget:self action:@selector(sortPriceBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     _upSortPrice = YES;
+    */
     
+    // ------------------- 四种排序 -------------------
+    // 1. 最新加入 2. 关注人数 3. 交易指数 4. 下载指数
+    NSArray * titles = @[@"最新加入\u25bc", @"关注人数\u25bc", @"交易指数\u25bc", @"下载指数\u25bc"];
+    for (NSInteger i = 0; i < titles.count; i++) {
+        UIButton * sortAllBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        sortAllBtn.frame = CGRectMake(kScreentWidth + i * (kScreentWidth / 4), 0, kScreentWidth/4, 32);
+        [_scrollView addSubview:sortAllBtn];
+        sortAllBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        [sortAllBtn setTitleColor:kColor(0x1F1F1F) forState:UIControlStateNormal];
+        [sortAllBtn setTitle:titles[i] forState:UIControlStateNormal];
+        [sortAllBtn addTarget:self action:@selector(sortBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        sortAllBtn.tag = 100 + i;
+    }
+    
+    // 讲师展示列表
     self.teacherTableView = [[UITableView alloc] init];
     self.teacherTableView.frame = CGRectMake(kScreentWidth, 32, kScreentWidth, _scrollView.frame.size.height-32);
     [_scrollView addSubview:self.teacherTableView];
@@ -359,7 +434,7 @@
     
     // (2) 九宫格模块展示
     NSArray * moduleImages = @[@"stock.png", @"fund.png", @"metal.png", @"foreign.png", @"analyze.png", @"bond.png", @"counselor.png", @"more.png"];
-    NSArray * moduleTitles = @[@"股票", @"基金", @"贵金属", @"外汇", @"分析", @"债券", @"顾问", @"更多"];
+//    NSArray * moduleTitles = @[@"股票", @"基金", @"贵金属", @"外汇", @"分析", @"债券", @"顾问", @"更多"];
     for (int i = 0; i < 8; i++) {
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.tag = 40 + i;
@@ -370,6 +445,7 @@
         [btn setBackgroundImage:[UIImage imageNamed:moduleImages[i]] forState:UIControlStateNormal];
         [btn addTarget:self action:@selector(moduleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         [headerView addSubview:btn];
+        [_moduleBtnArr addObject:btn];
         
         UILabel * label = [[UILabel alloc] init];
         label.textAlignment = NSTextAlignmentCenter;
@@ -377,8 +453,9 @@
         CGFloat labelX = (i % 4) * (kScreentWidth / 4);
         CGFloat labelY = CGRectGetMaxY(btn.frame);
         label.frame = CGRectMake(labelX, labelY, kScreentWidth / 4, 40);
-        label.text = moduleTitles[i];
+//        label.text = moduleTitles[i];
         [headerView addSubview:label];
+        [_moduleBtnLabelArr addObject:label];
     }
     
     // (3) 横幅
@@ -387,6 +464,7 @@
 //    streamerView.backgroundColor = kBlueColor;
     [headerView addSubview:streamerView];
     
+    /*
     // 7*24h
     UILabel * firstlabel = [[UILabel alloc] init];
     firstlabel.frame = CGRectMake(15, 0, 40, 35);
@@ -408,14 +486,17 @@
     lineLabel.frame = CGRectMake(CGRectGetMaxX(secondLabel.frame), (35 - 27) / 2, 1, 27);
     lineLabel.backgroundColor = [UIColor colorWithRed:(((0xD8D8D8 & 0xFF0000) >> 16))/255.0 green:(((0xD8D8D8 &0xFF00) >>8))/255.0 blue:((0xD8D8D8 &0xFF))/255.0 alpha:1.0];
     [streamerView addSubview:lineLabel];
+    */
     
     // 标题
     UILabel * titleLabel = [[UILabel alloc] init];
-    titleLabel.frame = CGRectMake(CGRectGetMaxX(lineLabel.frame) + 10, 0, kScreentWidth - CGRectGetMaxX(lineLabel.frame), 35);
-    titleLabel.text = @"刘强栋分析师昨日分析腾讯控股(00700)";
+    titleLabel.frame = CGRectMake(15, 0, kScreentWidth - 30, 35);
+//    titleLabel.text = @"刘强栋分析师昨日分析腾讯控股(00700)";
     titleLabel.textColor = kColor(0x4A4A4A);
-    titleLabel.font = [UIFont systemFontOfSize:12.5];
+    titleLabel.font = [UIFont systemFontOfSize:17];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
     [streamerView addSubview:titleLabel];
+    _titleLabel = titleLabel;
     
     // (4)第二个轮播图
 //    UIScrollView * secondScrollView = [[UIScrollView alloc] init];
@@ -482,6 +563,26 @@
     NSLog(@"cyclePageClickAction - %ld", clickIndex);
 }
 
+#pragma mark - 四种排序按钮响应事件
+- (void)sortBtnClick:(UIButton *)sender {
+    NSString * urlStr = [NSString stringWithFormat:@"%@/lecturer/findAll", kJGT];
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    [manager GET:urlStr parameters:@{@"type":[NSString stringWithFormat:@"%ld", sender.tag - 100]} progress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        _teacherDataSource = [responseObject objectForKey:kData];
+        NSLog(@"teacherDataSource - %ld", _teacherDataSource.count);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_teacherTableView reloadData];
+        });
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"error - %@", error);
+    }];
+}
+
+/*
 #pragma mark- 排序按钮响应事件
 - (void)sortAllBtnClick:(UIButton *)sender {
     _upSortAll = !_upSortAll;
@@ -545,6 +646,7 @@
     
     NSLog(@"sortPriceBtnClick - %d", _upSortPrice);
 }
+*/
 
 #pragma mark - 首页按钮响应事件
 - (void)homeBtnClick:(UIButton *)sender {
@@ -570,7 +672,9 @@
     NSLog(@"moduleBtnClick");
         
     [self.rootVC tagBtnClick:self.rootVC.tabbarBtns[1]];
-    self.customVC.selectedIndex = sender.tag - 40;
+//    self.customVC.selectedIndex = sender.tag - 40;
+//    [self.customVC updateDataSource:sender.tag - 40];
+
 //    [self.customVC btnClick:self.customVC.moduleBtns[sender.tag - 40]];
 
 //    if (sender.tag == 40) {
@@ -615,7 +719,11 @@
 #pragma mark - tableView
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (tableView.tag == 31) {
-        return _homeDataSource.count;
+        if ([_homeDataSource respondsToSelector:@selector(count)]) {
+            
+            return _homeDataSource.count;
+        }
+        return 0;
     }
     return _teacherDataSource.count;
 }
@@ -682,7 +790,7 @@
         [cell.tagBtn2 setTitle:dic[@"tag2"] forState:UIControlStateNormal];
         cell.descLbl.text = dic[@"introduction"];
         cell.followLabel.text = [NSString stringWithFormat:@"关注人数: %@人", dic[@"attentionNum"]];
-        cell.downloadLabel.text = [NSString stringWithFormat:@"下载指数: %@%%", dic[@"downPoint"]];
+        cell.downloadLabel.text = [NSString stringWithFormat:@"下载指数: %@", dic[@"downPoint"]];
         cell.dealLabel.text = [NSString stringWithFormat:@"交易指数: %@分", dic[@"trin"]];
         
         // 在线忙碌
@@ -752,26 +860,59 @@
         BuyViewController * buyVC = [BuyViewController new];
         buyVC.courseId = _homeDataSource[indexPath.row][@"courseId"];
         buyVC.price = _homeDataSource[indexPath.row][@"price"];
+        buyVC.courseName = _homeDataSource[indexPath.row][@"courseDoc"];
         [self.navigationController pushViewController:buyVC animated:YES];
     }
     else {
         NSLog(@"teacherCell - didSelect -  %ld", indexPath.row);
         TeacherDetailViewController * teacherDetailVC = [[TeacherDetailViewController alloc] init];
-        teacherDetailVC.userId = _teacherDataSource[indexPath.row][@"lectId"];
+        teacherDetailVC.userId = _teacherDataSource[indexPath.row][@"lecturerId"];
         [self.navigationController pushViewController:teacherDetailVC animated:YES];
     }
 }
 
 #pragma mark - 日历事件
-/*
 - (void)calendarBtnClick:(UIButton *)sender {
     NSLog(@"calendarBtnClick");
     CalendarViewController * calendarVC = [CalendarViewController new];
     [self.navigationController pushViewController:calendarVC animated:YES];
-//    [self getUserInfoForPlatform:UMSocialPlatformType_WechatSession];
+//    CalendarController * calendarVC = [CalendarController new];
+//    [self.navigationController pushViewController:calendarVC animated:YES];
+    
 }
-*/
- 
+
+- (void)doWeixinPay {
+    // 向微信开放平台注册应用
+    [WXApi registerApp:kAppKeyWeiXin];
+    
+    //
+    PayReq *request = [[PayReq alloc] init];
+    request.partnerId = @"10000100";
+    request.prepayId = @"1101000000140415649af9fc314aa427";
+    request.package = @"Sign=WXPay";
+    request.nonceStr = @"a462b76e7436e98e0ed6e13c64b4fd1c";
+    request.timeStamp = 1397527777;
+    request.sign= @"582282D72DD2B03AD892830965F428CB16E7A256";
+    NSLog(@"%@, %d", request, [WXApi isWXAppInstalled]);
+    [WXApi sendReq:request];
+}
+
+-(void)onResp: (BaseResp*)resp{
+    if ([resp isKindOfClass:[PayResp class]]){
+        PayResp * response=(PayResp *)resp;
+        switch(response.errCode){
+            case WXSuccess:
+                //服务器端查询支付通知或查询API返回的结果再提示成功
+                NSLog(@"支付成功");
+                break;
+            default:
+                NSLog(@"支付失败，retcode=%d",resp.errCode);
+                break;
+        }
+    }
+}
+
+
 #pragma mark - 搜索事件
 - (void)searchBtnClick:(UIButton *)sender {
     NSLog(@"searchBtnClick");

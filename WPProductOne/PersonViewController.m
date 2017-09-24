@@ -11,7 +11,12 @@
 
 
 @interface PersonViewController ()
-
+{
+    UITextField * _nameTF;
+    UITextField * _numberTF;
+    NSDictionary * _userInfo;
+    UIButton * _cardBtn;
+}
 @end
 
 @implementation PersonViewController
@@ -19,6 +24,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    _userInfo = [[NSUserDefaults standardUserDefaults] objectForKey:kUser];
     [self initView];
 }
 
@@ -40,8 +47,9 @@
     // ------------------- 1 -------------------
     UIView * headerView = [UIView new];
     headerView.frame = CGRectMake(0, 0, kScreentWidth, 200);
+    [CLTool gradualBackgroundColor:headerView];
     [self.view addSubview:headerView];
-    headerView.backgroundColor = kGlobalColor;
+//    headerView.backgroundColor = kGlobalColor;
     
     UIImageView * imageView = [UIImageView new];
     imageView.frame = CGRectMake((kScreentWidth - 80) / 2, 10, 80, 90);
@@ -49,14 +57,13 @@
     [headerView addSubview:imageView];
     
     UILabel * label = [UILabel new];
-    label.frame = CGRectMake((kScreentWidth-135)/2, CGRectGetMaxY(imageView.frame)+10, 135, 22.5);
+    label.frame = CGRectMake((kScreentWidth-150)/2, CGRectGetMaxY(imageView.frame)+10, 150, 22.5);
     [headerView addSubview:label];
     label.textColor = kWhiteColor;
     label.font = [UIFont systemFontOfSize:16];
-    label.text = @"您已通过实名认证";
     
     UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
-    btn.frame = CGRectMake((kScreentWidth - 120) / 2, CGRectGetMaxY(label.frame) + 10, 120, 31);
+    btn.frame = CGRectMake((kScreentWidth - 150) / 2, CGRectGetMaxY(label.frame) + 10, 150, 31);
     [headerView addSubview:btn];
     [btn setTitle:@"查看实名权益" forState:UIControlStateNormal];
     [btn setTitleColor:kWhiteColor forState:UIControlStateNormal];
@@ -81,7 +88,8 @@
     nameTF.textColor = kColor(0xB0B0B0);
     nameTF.font = [UIFont systemFontOfSize:15];
     nameTF.textAlignment = NSTextAlignmentRight;
-    nameTF.text = @"马画藤";
+    nameTF.placeholder = @"请输入真实姓名";
+    _nameTF = nameTF;
     
     // 身份证号
     UILabel * numberLabel = [UILabel new];
@@ -98,8 +106,10 @@
     numberTF.textColor = kColor(0xB0B0B0);
     numberTF.font = [UIFont systemFontOfSize:15];
     numberTF.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-    numberTF.text = @"1**************19";
+//    numberTF.text = @"1**************19";
+    numberTF.placeholder = @"请输入身份证号";
     numberTF.textAlignment = NSTextAlignmentRight;
+    _numberTF = numberTF;
     
     // 证件信息
     UILabel * cardLabel = [UILabel new];
@@ -117,7 +127,47 @@
     [cardBtn setTitleColor:kColor(0xB0B0B0) forState:UIControlStateNormal];
     cardBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     [cardBtn addTarget:self action:@selector(cardBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    _cardBtn = cardBtn;
     
+    UIButton * submitBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    submitBtn.frame = CGRectMake(30, CGRectGetMaxY(cardBtn.frame) + 30, kScreentWidth - 30 * 2, 43);
+    [self.view addSubview:submitBtn];
+    [CLTool gradualBackgroundColor:submitBtn];
+    [submitBtn setTitle:@"提交信息" forState:UIControlStateNormal];
+    submitBtn.titleLabel.font = [UIFont systemFontOfSize:17];
+    [submitBtn addTarget:self action:@selector(submitBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    
+    NSLog(@"userInfo - %@", _userInfo);
+    if ([_userInfo[kIsIndentify] isEqualToString:@""]) {
+        label.text = @"您已通过实名认证";
+        nameTF.text = _userInfo[@"realName"];
+        nameTF.userInteractionEnabled = NO;
+        numberTF.text = _userInfo[kIdNumber];
+        numberTF.userInteractionEnabled = NO;
+        [_cardBtn setTitle:@"已上传" forState:UIControlStateNormal];
+        _cardBtn.userInteractionEnabled = NO;
+        submitBtn.userInteractionEnabled = NO;
+    } else {
+        label.text = @"您没有通过实名认证";
+    }
+}
+
+- (void)submitBtnClick {
+    NSString * urlStr = [NSString stringWithFormat:@"%@/center/user/realName", kJGT];
+    NSString * z = [[NSUserDefaults standardUserDefaults] objectForKey:@"zPic"];
+    NSString * b = [[NSUserDefaults standardUserDefaults] objectForKey:@"bPic"];
+    NSDictionary * param = @{@"realName":_nameTF, @"idNum":_numberTF.text, @"zPic":z, @"bPic":b};
+    NSLog(@"person - %@", param);
+    [[AFHTTPSessionManager manager] GET:urlStr parameters:param progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"person - %@", responseObject);
+        if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            [CLTool showAlert:@"认证通过" target:self];
+        } else {
+            [CLTool showAlert:@"认证未通过" target:self];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
 }
 
 - (void)cardBtnClick:(UIButton *)sender {

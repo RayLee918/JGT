@@ -31,13 +31,13 @@
         // 头像
         self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
         [self.contentView addSubview:self.icon];
-        self.icon.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"icon.png"]];
+        self.icon.image = kImageNamed(@"default_head.png");
         
         // 昵称
-        self.nickNameLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.icon.frame) + 5, CGRectGetMinY(self.icon.frame), kScreentWidth - 60 - 10, 40)];
+        self.nickNameLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.icon.frame) + 15, CGRectGetMinY(self.icon.frame), kScreentWidth - 60 - 10, 40)];
         [self.contentView addSubview:self.nickNameLbl];
         self.nickNameLbl.textColor = kColor(0x3B3B3B);
-        self.nickNameLbl.font = [UIFont systemFontOfSize:14];
+        self.nickNameLbl.font = [UIFont systemFontOfSize:17];
     }
     return self;
 }

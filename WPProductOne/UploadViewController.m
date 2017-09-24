@@ -10,7 +10,9 @@
 
 
 @interface UploadViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
-
+{
+    NSString * _cardStr;
+}
 @end
 
 @implementation UploadViewController
@@ -51,36 +53,37 @@
 
 - (void)btn1Click:(UIButton *)sender {
     NSLog(@"btn1Click");
+    _cardStr = @"zPic";
     [self uploadImage:sender];
 }
 
 - (void)uploadImage:(UIButton *)sender {
-    UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
-    // 从图库选取
-    [alert addAction:[UIAlertAction actionWithTitle:@"从手机相册选取" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-        UIImagePickerController * imagePicker = [[UIImagePickerController alloc] init];
-        imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        imagePicker.allowsEditing = YES;
-        imagePicker.delegate = self;
-        imagePicker.view.tag = sender.tag;
-        [self presentViewController:imagePicker animated:YES completion:NULL];
-        NSLog(@"haha - %d", [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]);
-        
-    }]];
+//    UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+//    [alert addAction:[UIAlertAction actionWithTitle:@"从手机相册选取" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        
+//    }]];
+//    
+//    [alert addAction:[UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        
+//    }]];
+//    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+//        
+//    }]];
+//    [self presentViewController:alert animated:YES completion:nil];
     
-    [alert addAction:[UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-    }]];
-    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        
-    }]];
-    [self presentViewController:alert animated:YES completion:nil];
+    UIImagePickerController * imagePicker = [[UIImagePickerController alloc] init];
+    imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    imagePicker.allowsEditing = YES;
+    imagePicker.delegate = self;
+    imagePicker.view.tag = sender.tag;
+    [self presentViewController:imagePicker animated:YES completion:NULL];
+    NSLog(@"haha - %d", [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]);
 }
 
 - (void)btn2Click:(UIButton *)sender {
     NSLog(@"btn2Click");
+    _cardStr = @"bPic";
     [self uploadImage:sender];
 }
 
@@ -104,12 +107,14 @@
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     [manager POST:urlStr parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
-        [formData appendPartWithFileData:UIImageJPEGRepresentation(image, 1) name:@"file" fileName:@"png" mimeType:@"image/png"];
+        [formData appendPartWithFileData:UIImageJPEGRepresentation(image, 0.5) name:@"file" fileName:@"png" mimeType:@"image/png"];
         
     } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         UIButton * uploadBtn = (UIButton *)[self.view viewWithTag:picker.view.tag];
         [uploadBtn setBackgroundImage:image forState:UIControlStateNormal];
-        [self showAlert:[responseObject objectForKey:kMsg]];
+        [[NSUserDefaults standardUserDefaults] setObject:[responseObject objectForKey:kData] forKey:_cardStr];
+//        [self showAlert:[responseObject objectForKey:kMsg]];
+        NSLog(@"%@ - %@", _cardStr, responseObject);
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"error - %@", error);

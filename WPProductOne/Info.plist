@@ -42,15 +42,17 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>wx</string>
+			<string>weixin</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>wxd9b08bff075f8edd9eedc854cc629a30</string>
+				<string>wxf72be7ab7530ee51</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>alipay</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>WPProductOneAlipay</string>

@@ -15,6 +15,7 @@
     UITextField * _passwordTF;
     UIButton * _verifyBtn;
     NSTimer * _timer;
+    NSString * _pageCode;
 }
 @end
 
@@ -131,7 +132,7 @@
     if (_phoneTF.text.length == 11) {
         if (_verifyTF.text.length >= 1) {
             if (_passwordTF.text.length >=6) {
-                NSDictionary * params = @{@"phone":_phoneTF.text, @"password":_passwordTF.text, @"inputCode":_verifyTF.text};
+                NSDictionary * params = @{@"phone":_phoneTF.text, @"password":_passwordTF.text, @"inputCode":_verifyTF.text, @"pageCode":_pageCode};
                 [[AFHTTPSessionManager manager] GET:[NSString stringWithFormat:@"%@/regOrLog/resetPwd", kJGT] parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                     if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
                         UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:@"修改成功" preferredStyle:UIAlertControllerStyleAlert];
@@ -186,11 +187,22 @@
 #pragma mark - 验证码
 - (void)verifyBtnClick:(UIButton *)sender {
     NSLog(@"verifyBtnClick");
-    sender.userInteractionEnabled = NO;
-    __block NSInteger value = 10;
     if (_phoneTF.text.length == 11) {
+        
+        // 获取验证码
+        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/sendCode", kJGT];
+        [[AFHTTPSessionManager manager] GET:urlStr parameters:@{@"type":@"2", @"phone":_phoneTF.text} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+                _pageCode = [responseObject objectForKey:kData];
+            }
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+        // 获取验证码按钮展示
+        __block NSInteger value = 60;
+        sender.userInteractionEnabled = NO;
         _timer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
-            NSLog(@"verify - %ld", value);
+            NSLog(@"subscribeBtnClick - %ld", value);
             NSString * str = [NSString stringWithFormat:@"%ld重新获取", --value];
             if (value == 0) {
                 [sender setTitle:@"获取验证码" forState:UIControlStateNormal];
@@ -200,12 +212,6 @@
                 [sender setTitle:str forState:UIControlStateNormal];
             }
         }];
-//        NSString * urlStr = [NSString stringWithFormat:@"%@", kJGT];
-//        [[AFHTTPSessionManager manager] GET:urlStr parameters:@{kPhone:_phoneTF.text} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//            [self showAlert:[responseObject objectForKey:@"获取成功"]];
-//        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//            [self showAlert:@"获取失败"];
-//        }];
     } else {
         [CLTool showAlert:@"填写手机号" target:self];
     }

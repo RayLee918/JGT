@@ -36,35 +36,37 @@
         self.nickNameLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.icon.frame) + 24, CGRectGetMinY(self.icon.frame), kScreentWidth - CGRectGetMaxX(self.icon.frame) - 24, 15)];
         [self.contentView addSubview:self.nickNameLbl];
         self.nickNameLbl.textColor = kColor(0x1F1F1F);
-        self.nickNameLbl.font = [UIFont systemFontOfSize:13];
+        self.nickNameLbl.font = [UIFont systemFontOfSize:15];
         
         // 标签
         self.tagBtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.tagBtn1.frame = CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.nickNameLbl.frame)+5, 50, 15);
+        self.tagBtn1.frame = CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.nickNameLbl.frame)+10, 50, 15);
         [self.contentView addSubview:self.tagBtn1];
         self.tagBtn1.layer.cornerRadius = 3.48;
         self.tagBtn1.layer.borderColor = kColor(0x4990E2).CGColor;
         self.tagBtn1.layer.borderWidth = 1;
         [self.tagBtn1 setTitleColor:kColor(0x4990E2) forState:UIControlStateNormal];
-        self.tagBtn1.titleLabel.font = [UIFont systemFontOfSize:8.7];
+        self.tagBtn1.titleLabel.font = [UIFont systemFontOfSize:10];
         
         self.tagBtn2 = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.tagBtn2.frame = CGRectMake(CGRectGetMaxX(self.tagBtn1.frame) + 20, CGRectGetMaxY(self.nickNameLbl.frame)+5, 50, 15);
+        self.tagBtn2.frame = CGRectMake(CGRectGetMaxX(self.tagBtn1.frame) + 20, CGRectGetMaxY(self.nickNameLbl.frame)+10, 50, 15);
         [self.contentView addSubview:self.tagBtn2];
         self.tagBtn2.layer.cornerRadius = 3.48;
         self.tagBtn2.layer.borderColor = kColor(0x4990E2).CGColor;
         self.tagBtn2.layer.borderWidth = 1;
         [self.tagBtn2 setTitleColor:kColor(0x4990E2) forState:UIControlStateNormal];
-        self.tagBtn2.titleLabel.font = [UIFont systemFontOfSize:8.7];
+        self.tagBtn2.titleLabel.font = [UIFont systemFontOfSize:10];
 
         
         // 简介
-        self.descLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.icon.frame) - 28, self.nickNameLbl.frame.size.width - 24, 28)];
+        self.descLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.tagBtn1.frame) + 5, self.nickNameLbl.frame.size.width - 24, 44)];
         [self addSubview:self.descLbl];
-        self.descLbl.font = [UIFont systemFontOfSize:10];
+        self.descLbl.font = [UIFont systemFontOfSize:13];
         self.descLbl.textColor = kColor(0x4A4A4A);
         self.descLbl.numberOfLines = 0;
+//        self.descLbl.backgroundColor = kGlobalColor;
         
+        // 状态栏
         self.stateView = [UIView new];
         self.stateView.frame = CGRectMake(0, 112, kScreentWidth, 25);
         [self.contentView addSubview:self.stateView];
@@ -78,15 +80,15 @@
         
         self.stateLabel = [UILabel new];
         self.stateLabel.frame = CGRectMake(kScreentWidth - 12 - 22, 5, 22, 15);
-        [self.stateView addSubview:self.stateLabel];
+//        [self.stateView addSubview:self.stateLabel];
         self.stateLabel.textColor = kColor(0x4990E2);
-        self.stateLabel.font = [UIFont fontWithName:@"PingFang-SC-Regular" size:11];
+        self.stateLabel.font = [UIFont fontWithName:@"PingFang-SC-Regular" size:13];
         
         // 关注
-        CGFloat width = (kScreentWidth-12-22-22)/3-12-10-5;
+        CGFloat width = kScreentWidth / 3 - 12 - 10 - 5;
         
         self.followImageView = [[UIImageView alloc] init];
-        self.followImageView.frame = CGRectMake(12, (25-10)/2, 10, 11);
+        self.followImageView.frame = CGRectMake(20, (25-13)/2, 10, 13);
         [self.stateView addSubview:self.followImageView];
         self.followImageView.image = [UIImage imageNamed:@"follow.png"];
         
@@ -94,11 +96,11 @@
         self.followLabel.frame = CGRectMake(CGRectGetMaxX(self.followImageView.frame) + 5, 0, width, 25);
         [self.stateView addSubview:self.followLabel];
         self.followLabel.textColor = kColor(0x9B9B9B);
-        self.followLabel.font = [UIFont fontWithName:@"PingFang-SC-Regular" size:11];
+        self.followLabel.font = [UIFont fontWithName:@"PingFang-SC-Regular" size:13];
         
         // 交易
         self.dealImageView = [[UIImageView alloc] init];
-        self.dealImageView.frame = CGRectMake(CGRectGetMaxX(self.followLabel.frame) + 12, (25-10)/2, 10, 11);
+        self.dealImageView.frame = CGRectMake(CGRectGetMaxX(self.followLabel.frame) + 12, (25-11)/2, 10, 11);
         [self.stateView addSubview:self.dealImageView];
         self.dealImageView.image = [UIImage imageNamed:@"deal.png"];
         
@@ -106,11 +108,11 @@
         self.dealLabel.frame = CGRectMake(CGRectGetMaxX(self.dealImageView.frame) + 5, 0, width, 25);
         [self.stateView addSubview:self.dealLabel];
         self.dealLabel.textColor = kColor(0x9B9B9B);
-        self.dealLabel.font = [UIFont fontWithName:@"PingFang-SC-Regular" size:11];
+        self.dealLabel.font = [UIFont fontWithName:@"PingFang-SC-Regular" size:13];
         
         // 下载
         self.downloadImageView = [[UIImageView alloc] init];
-        self.downloadImageView.frame = CGRectMake(CGRectGetMaxX(self.dealLabel.frame) + 12, (25-10)/2, 10, 11);
+        self.downloadImageView.frame = CGRectMake(CGRectGetMaxX(self.dealLabel.frame) + 12, (25-11)/2, 10, 11);
         [self.stateView addSubview:self.downloadImageView];
         self.downloadImageView.image = [UIImage imageNamed:@"download.png"];
         
@@ -119,7 +121,7 @@
         [self.stateView addSubview:self.downloadLabel];
         self.downloadLabel.textColor = kColor(0x9B9B9B);
 //        self.downloadLabel.font = [UIFont fontWithName:@".PingFang-SC-Regular" size:11];
-        self.downloadLabel.font = [UIFont systemFontOfSize:11];
+        self.downloadLabel.font = [UIFont systemFontOfSize:13];
     }
     return self;
 }

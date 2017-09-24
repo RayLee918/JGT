@@ -36,43 +36,42 @@
         
         
         // 昵称
-        self.nickNameLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.icon.frame) + 25, CGRectGetMinY(self.icon.frame), 50, 10)];
+        self.nickNameLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.icon.frame) + 25, CGRectGetMinY(self.icon.frame), 150, 10)];
         [self.contentView addSubview:self.nickNameLbl];
         self.nickNameLbl.textColor = kColor(0x1F1F1F);
-        self.nickNameLbl.font = [UIFont systemFontOfSize:8.5];
+        self.nickNameLbl.font = [UIFont systemFontOfSize:12];
         
         // 状态
         self.stateLabel = [UILabel new];
         self.stateLabel.frame = CGRectMake(CGRectGetMaxX(self.nickNameLbl.frame), CGRectGetMaxY(self.nickNameLbl.frame) - 10, 15, 10);
         [self.contentView addSubview:self.stateLabel];
         self.stateLabel.textColor = kColor(0xFF4F53);
-        self.stateLabel.font = [UIFont systemFontOfSize:6.5];
-
+        self.stateLabel.font = [UIFont systemFontOfSize:8];
         
         // 标签
         self.tagBtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.tagBtn1.frame = CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.nickNameLbl.frame) + 7.5, 35, 10);
+        self.tagBtn1.frame = CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.nickNameLbl.frame) + 7.5, 40, 10);
         [self.contentView addSubview:self.tagBtn1];
         self.tagBtn1.layer.cornerRadius = 2.32;
         self.tagBtn1.layer.borderColor = kColor(0xFF4F53).CGColor;
         self.tagBtn1.layer.borderWidth = 1;
         [self.tagBtn1 setTitleColor:kColor(0xFF4F53) forState:UIControlStateNormal];
-        self.tagBtn1.titleLabel.font = [UIFont systemFontOfSize:6];
+        self.tagBtn1.titleLabel.font = [UIFont systemFontOfSize:8];
         
         self.tagBtn2 = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.tagBtn2.frame = CGRectMake(CGRectGetMaxX(self.tagBtn1.frame) + 10, CGRectGetMaxY(self.nickNameLbl.frame) + 7.5, 35, 10);
+        self.tagBtn2.frame = CGRectMake(CGRectGetMaxX(self.tagBtn1.frame) + 10, CGRectGetMaxY(self.nickNameLbl.frame) + 7.5, 40, 10);
         [self.contentView addSubview:self.tagBtn2];
         self.tagBtn2.layer.cornerRadius = 2.32;
         self.tagBtn2.layer.borderColor = kColor(0xFF4F53).CGColor;
         self.tagBtn2.layer.borderWidth = 1;
         [self.tagBtn2 setTitleColor:kColor(0xFF4F53) forState:UIControlStateNormal];
-        self.tagBtn2.titleLabel.font = [UIFont systemFontOfSize:6];
+        self.tagBtn2.titleLabel.font = [UIFont systemFontOfSize:9];
         
         
         // 简介
         self.descLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.tagBtn1.frame) + 5,kScreentWidth - 93 - 100 - 25, 28)];
         [self addSubview:self.descLbl];
-        self.descLbl.font = [UIFont systemFontOfSize:7.5];
+        self.descLbl.font = [UIFont systemFontOfSize:10];
         self.descLbl.textColor = kColor(0x4A4A4A);
         self.descLbl.numberOfLines = 0;
         

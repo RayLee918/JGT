@@ -31,7 +31,7 @@
         // 头像
         self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 32.5, 32.5)];
         [self.contentView addSubview:self.icon];
-        self.icon.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"icon.png"]];
+        self.icon.image = kImageNamed(@"default_head.png");
         self.icon.layer.cornerRadius = 32.5/2;
         self.icon.layer.masksToBounds = YES;
         
@@ -84,8 +84,11 @@
         self.orderBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         self.orderBtn.frame = CGRectMake(self.customView.frame.size.width - kMargin10 - 100, (self.customView.frame.size.height - 31) / 2, 100, 31);
         [self.customView addSubview:self.orderBtn];
-        [self.orderBtn setBackgroundImage:[UIImage imageNamed:@"order.png"] forState:UIControlStateNormal];
-//        [self.orderBtn setTitle:@"立即订购" forState:UIControlStateNormal];
+        [self.orderBtn setBackgroundImage:[UIImage imageNamed:@"btn_background.png"] forState:UIControlStateNormal];
+        [self.orderBtn setTitle:@"立即订购" forState:UIControlStateNormal];
+        self.orderBtn.layer.cornerRadius = 15.5;
+        self.orderBtn.layer.masksToBounds = YES;
+        [CLTool gradualBackgroundColor:self.orderBtn];
     }
     return self;
 }

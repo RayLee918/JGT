@@ -38,6 +38,9 @@
     NSString * _isTeacher;
     UIButton * _teacherBtn;
     UIButton * _studentBtn;
+    
+    NSString * _pageCode;
+    NSTimer * _timer;
 }
 
 @end
@@ -157,7 +160,8 @@
     UIButton * subscribeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     subscribeBtn.frame = CGRectMake(kScreentWidth - 10 - 135, CGRectGetMinY(subcribeTF.frame) + (48 - 37) / 2, 135, 37);
     [scrollView addSubview:subscribeBtn];
-    subscribeBtn.backgroundColor = kGlobalColor;
+//    subscribeBtn.backgroundColor = kGlobalColor;
+    [CLTool gradualBackgroundColor:subscribeBtn];
     subscribeBtn.titleLabel.font = [UIFont systemFontOfSize:15];
     [subscribeBtn setTitle:@"获取验证码" forState:UIControlStateNormal];
     [subscribeBtn addTarget:self action:@selector(subscribeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -231,7 +235,8 @@
     [scrollView addSubview:registerBtn];
     [registerBtn setTitle:@"注册" forState:UIControlStateNormal];
     registerBtn.titleLabel.font = [UIFont systemFontOfSize:18];
-    registerBtn.backgroundColor = kGlobalColor;
+//    registerBtn.backgroundColor = kGlobalColor;
+    [CLTool gradualBackgroundColor:registerBtn];
     [registerBtn addTarget:self action:@selector(registerBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     // 备注
@@ -292,11 +297,20 @@
         imagePicker.allowsEditing = YES;
         imagePicker.delegate = self;
         [self presentViewController:imagePicker animated:YES completion:NULL];
-        NSLog(@"haha - %d", [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]);
+        NSLog(@"手机相册选取 - %d", [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]);
         
     }]];
     
     [alert addAction:[UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            
+            UIImagePickerController * imagePicker = [[UIImagePickerController alloc] init];
+            imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            imagePicker.allowsEditing = YES;
+            imagePicker.delegate = self;
+            [self presentViewController:imagePicker animated:YES completion:NULL];
+            NSLog(@"拍照 - %d", [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]);
+        }
         
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
@@ -327,7 +341,7 @@
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     [manager POST:urlStr parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
-        [formData appendPartWithFileData:UIImageJPEGRepresentation(_headImage, 1) name:@"file" fileName:@"png" mimeType:@"image/png"];
+        [formData appendPartWithFileData:UIImageJPEGRepresentation(_headImage, 0.5) name:@"file" fileName:@"png" mimeType:@"image/png"];
         
     } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"success - %@", responseObject);
@@ -347,7 +361,6 @@
 #pragma mark - 注册
 - (void)registerBtnClick:(UIButton *)sender {
     NSLog(@"registerBtnClick");
-    
     if (_nicknameTf.text.length >= 1) {
         if (_numberTF.text.length == 11) {
             if (_subcribeTF.text.length >= 1) {
@@ -357,7 +370,7 @@
                         if (_headImageStr.length != 0) {
                             headImageStr = _headImageStr;
                         }
-                        NSDictionary * params = @{@"nickName":_nicknameTf.text, @"password":_pwdTF.text, @"token":@"token", @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"], @"phone":_numberTF.text, @"headPic":headImageStr, @"isLecturer":_isTeacher};
+                        NSDictionary * params = @{@"nickName":_nicknameTf.text, @"password":_pwdTF.text, @"token":@"", @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"], @"phone":_numberTF.text, @"headPic":headImageStr, @"isLecturer":_isTeacher, @"inputCode":_subcribeTF.text, @"pageCode":_pageCode};
                         NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/regUser", kJGT];
                         AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
                         [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
@@ -396,7 +409,6 @@
     } else {
         [self showAlert:@"昵称不能为空"];
     }
-    
 }
 
 - (void)showAlert:(NSString *)message {
@@ -405,9 +417,37 @@
     [alert addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:nil]];
 }
 
-#pragma mark - 获取验证友
+#pragma mark - 获取验证码
 - (void)subscribeBtnClick:(UIButton *)sender {
     NSLog(@"subscribeBtnClick");
+    if (_numberTF.text.length == 11) {
+        
+        // 获取验证码
+        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/sendCode", kJGT];
+        [[AFHTTPSessionManager manager] GET:urlStr parameters:@{@"type":@"1", @"phone":_numberTF.text} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+                _pageCode = [responseObject objectForKey:kData];
+            }
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+        // 获取验证码按钮展示
+        __block NSInteger value = 10;
+        sender.userInteractionEnabled = NO;
+        _timer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
+            NSLog(@"subscribeBtnClick - %ld", value);
+            NSString * str = [NSString stringWithFormat:@"%ld重新获取", --value];
+            if (value == 0) {
+                [sender setTitle:@"获取验证码" forState:UIControlStateNormal];
+                sender.userInteractionEnabled = YES;
+                [_timer invalidate];
+            } else {
+                [sender setTitle:str forState:UIControlStateNormal];
+            }
+        }];
+    } else {
+        [CLTool showAlert:@"填写手机号" target:self];
+    }
 }
 
 #pragma mark - 服务协议

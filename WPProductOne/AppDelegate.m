@@ -9,8 +9,9 @@
 #import "AppDelegate.h"
 #import "RootViewController.h"
 #import <sys/utsname.h>
+#import "BuyViewController.h"
 
-@interface AppDelegate ()
+@interface AppDelegate () <WXApiDelegate>
 
 @end
 
@@ -33,6 +34,12 @@
 //    NSInteger timeInterval = [date timeIntervalSince1970];
 //    NSLog(@"%@, %@", date, [NSString stringWithFormat:@"%ld", timeInterval]);
 
+    // 注册微信
+    [WXApi registerApp:kAppKeyWeiXin];
+    
+    // 进入讲师和用户版本
+    
+    // 打开程序, 传给服务器端Token
     if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
         
         NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
@@ -49,7 +56,8 @@
     
     // 更改导航主题
     UINavigationBar * bar = [UINavigationBar appearance];
-    bar.barTintColor = kGlobalColor;
+    bar.barTintColor = [UIColor colorWithPatternImage:kImageNamed(@"background_color_64.png")];
+//    [CLTool gradualBackgroundColor:bar];
     bar.tintColor = kWhiteColor;
     bar.translucent = NO;
     [bar setTitleTextAttributes:@{NSForegroundColorAttributeName:kWhiteColor}];
@@ -82,6 +90,21 @@
     return YES;
 }
 
+-(void)onResp:(BaseResp *)resp {
+    if ([resp isKindOfClass:[PayResp class]]){
+        PayResp * response=(PayResp *)resp;
+        switch(response.errCode){
+            case WXSuccess:
+                //服务器端查询支付通知或查询API返回的结果再提示成功
+                NSLog(@"appDelegate - 支付成功, %@", resp);
+                break;
+            default:
+                NSLog(@"appDelegate 支付失败, %@, retcode=%d", resp, resp.errCode);
+                break;
+        }
+    }
+}
+
 #pragma mark 注册各个平台的信息
 - (void)configUSharePlatforms
 {
@@ -108,6 +131,8 @@
             [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
                 NSLog(@"alipay - result - 1 = %@",resultDic);
             }];
+        } else {
+            [WXApi handleOpenURL:url delegate:(id<WXApiDelegate>)[BuyViewController new]];
         }
         return YES;
     }
@@ -124,6 +149,8 @@
             [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
                 NSLog(@"alipay - result - 1 = %@",resultDic);
             }];
+        } else {
+            [WXApi handleOpenURL:url delegate:(id<WXApiDelegate>)[BuyViewController new]];
         }
         return YES;
     }

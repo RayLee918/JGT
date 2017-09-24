@@ -67,6 +67,7 @@
         if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
             
             _overViewDataSource = [responseObject objectForKey:kData];
+            
             // 更新UI
             dispatch_async(dispatch_get_main_queue(), ^{
                 
@@ -83,7 +84,7 @@
 
 #pragma mark - 获取进行中的课程
 - (void)getprocessViewDataSource {
-    NSString * urlStr = [NSString stringWithFormat:@"%@/lecturer/overCourse", kJGT];
+    NSString * urlStr = [NSString stringWithFormat:@"%@/lecturer/underwayCourse", kJGT];
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     [manager GET:urlStr parameters:@{@"id":self.userId} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
@@ -169,6 +170,7 @@
     UIImageView * imageView = [UIImageView new];
     imageView.frame = CGRectMake(kMargin20, 15, 50, 50);
     [self.view addSubview:imageView];
+    imageView.image = kImageNamed(@"default_head.png");
     imageView.layer.cornerRadius = 25;
     imageView.layer.masksToBounds = YES;
     _headImageView = imageView;
@@ -184,23 +186,23 @@
     
     // 标签
     UIButton * tagBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    tagBtn.frame = CGRectMake(kScreentWidth - 20 - 40 - 5 - 40, CGRectGetMinX(imageView.frame) + (25 - 11.5) / 2, 40, 11.5);
+    tagBtn.frame = CGRectMake(kScreentWidth - 20 - 40 - 20 - 40, CGRectGetMinX(imageView.frame), 44, 15);
     [self.view addSubview:tagBtn];
     [tagBtn setBackgroundColor:kGlobalColor];
 //    [tagBtn setTitle:@"黄金老师" forState:UIControlStateNormal];
     [tagBtn setTitleColor:kWhiteColor forState:UIControlStateNormal];
-    tagBtn.titleLabel.font = [UIFont systemFontOfSize:8];
+    tagBtn.titleLabel.font = [UIFont systemFontOfSize:10];
     tagBtn.layer.cornerRadius = 2.76;
     _tagBtn = tagBtn;
     
     // 关注
     UIButton * followBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    followBtn.frame = CGRectMake(kScreentWidth - 20 - 40, CGRectGetMinY(tagBtn.frame), 40, 11.5);
+    followBtn.frame = CGRectMake(kScreentWidth - 20 - 40, CGRectGetMinY(tagBtn.frame), 44, 15);
     [self.view addSubview:followBtn];
     [followBtn setBackgroundColor:kGlobalColor];
 //    [followBtn setTitle:@"+关注" forState:UIControlStateNormal];
     [followBtn setTitleColor:kWhiteColor forState:UIControlStateNormal];
-    followBtn.titleLabel.font = [UIFont systemFontOfSize:8];
+    followBtn.titleLabel.font = [UIFont systemFontOfSize:10];
     followBtn.layer.cornerRadius = 2.76;
     [followBtn addTarget:self action:@selector(followBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     _followBtn = followBtn;
@@ -221,12 +223,12 @@
     lineView.backgroundColor = kColor(0xEFEFEF);
     
     // 关注
+    /*
     UILabel * followLabel = [UILabel new];
     followLabel.frame = CGRectMake(0, CGRectGetMaxY(lineView.frame) + 10, kScreentWidth / 3, 20);
     [self.view addSubview:followLabel];
     followLabel.font = [UIFont systemFontOfSize:14];
     followLabel.textColor = kColor(0x1F1F1F);
-//    followLabel.text = @"500";
     followLabel.textAlignment = NSTextAlignmentCenter;
     _followLabel = followLabel;
     
@@ -248,19 +250,19 @@
     shutiao1.frame = CGRectMake(kScreentWidth / 3, CGRectGetMinY(followLabel.frame), 1, 40);
     [self.view addSubview:shutiao1];
     shutiao1.backgroundColor = kColor(0xEFEFEF);
-    
+    */
+     
     // 粉丝
     UILabel * fansLabel = [UILabel new];
-    fansLabel.frame = CGRectMake(kScreentWidth / 3, CGRectGetMaxY(lineView.frame) + 10, kScreentWidth / 3, 20);
+    fansLabel.frame = CGRectMake(0, CGRectGetMaxY(lineView.frame) + 10, kScreentWidth / 2, 20);
     [self.view addSubview:fansLabel];
     fansLabel.font = [UIFont systemFontOfSize:14];
     fansLabel.textColor = kColor(0x1F1F1F);
-//    fansLabel.text = @"12229";
     fansLabel.textAlignment = NSTextAlignmentCenter;
     _fansLabel = fansLabel;
     
     UILabel * fansLabel2 = [UILabel new];
-    fansLabel2.frame = CGRectMake(kScreentWidth / 3, CGRectGetMaxY(followLabel.frame), kScreentWidth / 3, 20);
+    fansLabel2.frame = CGRectMake(0, CGRectGetMaxY(fansLabel.frame), kScreentWidth / 2, 20);
     [self.view addSubview:fansLabel2];
     fansLabel2.font = [UIFont systemFontOfSize:14];
     fansLabel2.textColor = kColor(0xB0B0B0);
@@ -269,13 +271,13 @@
     
     // 分割线
     UIView * shutiao2 = [UIView new];
-    shutiao2.frame = CGRectMake(kScreentWidth / 3 * 2, CGRectGetMinY(followLabel.frame), 1, 40);
+    shutiao2.frame = CGRectMake(kScreentWidth / 2, CGRectGetMinY(fansLabel.frame), 1, 40);
     [self.view addSubview:shutiao2];
     shutiao2.backgroundColor = kColor(0xEFEFEF);
     
     // 动态
     UILabel * dynamicLabel = [UILabel new];
-    dynamicLabel.frame = CGRectMake(kScreentWidth / 3 * 2, CGRectGetMaxY(lineView.frame) + 10, kScreentWidth / 3, 20);
+    dynamicLabel.frame = CGRectMake(kScreentWidth / 2, CGRectGetMaxY(lineView.frame) + 10, kScreentWidth / 2, 20);
     [self.view addSubview:dynamicLabel];
     dynamicLabel.font = [UIFont systemFontOfSize:14];
     dynamicLabel.textColor = kColor(0x1F1F1F);
@@ -284,7 +286,7 @@
     _dynamicLabel = dynamicLabel;
     
     UILabel * dynamicLabel2 = [UILabel new];
-    dynamicLabel2.frame = CGRectMake(kScreentWidth / 3 * 2, CGRectGetMaxY(followLabel.frame), kScreentWidth / 3, 20);
+    dynamicLabel2.frame = CGRectMake(kScreentWidth / 2, CGRectGetMaxY(dynamicLabel.frame), kScreentWidth / 2, 20);
     [self.view addSubview:dynamicLabel2];
     dynamicLabel2.font = [UIFont systemFontOfSize:14];
     dynamicLabel2.textColor = kColor(0xB0B0B0);
@@ -293,17 +295,17 @@
     
     // 分割线
     UIView * lineView2 = [UIView new];
-    lineView2.frame = CGRectMake(0, CGRectGetMaxY(dynamicLabel2.frame) + 10, kScreentWidth, 2);
+    lineView2.frame = CGRectMake(0, CGRectGetMaxY(dynamicLabel2.frame) + 10, kScreentWidth, 1);
     [self.view addSubview:lineView2];
     lineView2.backgroundColor = kColor(0xEFEFEF);
     
     // 交易/分析
     UIButton * dealBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    dealBtn.frame = CGRectMake(20, CGRectGetMaxY(lineView2.frame), 60, 30);
+    dealBtn.frame = CGRectMake(0, CGRectGetMaxY(lineView2.frame), kScreentWidth / 3, 30);
     [self.view addSubview:dealBtn];
     [dealBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
     dealBtn.titleLabel.font = [UIFont systemFontOfSize:12];
-    [dealBtn setTitle:@"进行中" forState:UIControlStateNormal];
+    [dealBtn setTitle:@"进行中的课程" forState:UIControlStateNormal];
     [dealBtn addTarget:self action:@selector(dealBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     dealBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     _selectedBtn = dealBtn;
@@ -311,22 +313,22 @@
     
     // 老师资料
     UIButton * descBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    descBtn.frame = CGRectMake(CGRectGetMaxX(dealBtn.frame), CGRectGetMaxY(lineView2.frame), 60, 30);
+    descBtn.frame = CGRectMake(kScreentWidth / 3, CGRectGetMaxY(lineView2.frame), kScreentWidth / 3, 30);
     [self.view addSubview:descBtn];
     [descBtn setTitleColor:kColor(0x1F1F1F) forState:UIControlStateNormal];
     descBtn.titleLabel.font = [UIFont systemFontOfSize:12];
-    [descBtn setTitle:@"老师资料" forState:UIControlStateNormal];
+    [descBtn setTitle:@"讲师资料" forState:UIControlStateNormal];
     [descBtn addTarget:self action:@selector(dealBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     descBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     descBtn.tag = 11;
     
     // 已完结
     UIButton * overBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    overBtn.frame = CGRectMake(CGRectGetMaxX(descBtn.frame), CGRectGetMaxY(lineView2.frame), 60, 30);
+    overBtn.frame = CGRectMake(kScreentWidth / 3 * 2, CGRectGetMaxY(lineView2.frame), kScreentWidth / 3, 30);
     [self.view addSubview:overBtn];
     [overBtn setTitleColor:kColor(0x1F1F1F) forState:UIControlStateNormal];
     overBtn.titleLabel.font = [UIFont systemFontOfSize:12];
-    [overBtn setTitle:@"已完结" forState:UIControlStateNormal];
+    [overBtn setTitle:@"已完结的课程" forState:UIControlStateNormal];
     [overBtn addTarget:self action:@selector(dealBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     overBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     overBtn.tag = 12;
@@ -339,7 +341,7 @@
     
     // 173
     _hengtiao = [UIView new];
-    _hengtiao.frame = CGRectMake(CGRectGetMinX(dealBtn.frame), 173 - 2 - 1.5, 60, 1.5);
+    _hengtiao.frame = CGRectMake(CGRectGetMinX(dealBtn.frame), 173 - 2 - 1.5, kScreentWidth / 3, 1.5);
     [self.view addSubview:_hengtiao];
     _hengtiao.backgroundColor = kGlobalColor;
     
@@ -436,9 +438,14 @@
     if (tableView == _descView) {
         buyVC.courseId = _processViewDataSource[indexPath.row][@"id"];
         buyVC.price = _processViewDataSource[indexPath.row][@"price"];
+        buyVC.courseName = _processViewDataSource[indexPath.row][@"courseDoc"];
     } else {
         buyVC.courseId = _overViewDataSource[indexPath.row][@"id"];
         buyVC.price = _overViewDataSource[indexPath.row][@"price"];
+        if (_overViewDataSource[indexPath.row][@"courseDoc"] != [NSNull null]) {
+            
+            buyVC.courseName = _overViewDataSource[indexPath.row][@"courseDoc"];
+        }
     }
 
     [self.navigationController pushViewController:buyVC animated:YES];
@@ -531,7 +538,7 @@
 #pragma mark - 交易/分析, 老师资料, 已完结
 - (void)dealBtnClick:(UIButton *)sender {
     NSLog(@"dealBtnClick");
-    _hengtiao.frame = CGRectMake(CGRectGetMinX(sender.frame), 175 - 2 - 1.5, 60, 1.5);
+    _hengtiao.frame = CGRectMake(CGRectGetMinX(sender.frame), 175 - 2 - 1.5, kScreentWidth / 3, 1.5);
     [_selectedBtn setTitleColor:kColor(0x1F1F1F) forState:UIControlStateNormal];
     [sender setTitleColor:kGlobalColor forState:UIControlStateNormal];
     _selectedBtn = sender;

@@ -25,7 +25,7 @@
 {
     NSArray * _dataSource1;
     NSArray * _dataSource2;
-    BOOL _isTeacher;
+    NSString * _isTeacher;
     UIView * _loginView;
     
     UITextField * _nameTF;
@@ -70,9 +70,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _dataSource1 = @[@"我的消息", @"帐单明细", @"银行卡管理"];
+    _dataSource1 = @[@"我的订单", @"帐单明细", @"银行卡管理"];
     _dataSource2 = @[@"我的消息", @"资金提现", @"银行卡管理"];
-//    _isTeacher = YES;
+    _isTeacher = [[NSUserDefaults standardUserDefaults] objectForKey:kUser][kIsLecturer];
+    _isTeacher = @"0";
+    NSLog(@"isTeacher - %@", _isTeacher);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -116,7 +118,7 @@
     
     // 自定义导航栏
     UIView * navView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenRect.size.width, kBatteryHeight + kNavgationBarHeight)];
-    navView.backgroundColor = kGlobalColor;
+    [CLTool gradualBackgroundColor:navView];
     [self.view addSubview:navView];
     
     // 个人中心
@@ -307,7 +309,7 @@
     UIButton * logoutBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     logoutBtn.frame = CGRectMake(30, CGRectGetMaxY(versionBtn.frame) + 30, kScreentWidth - 30 * 2, 43);
     [footerView addSubview:logoutBtn];
-    logoutBtn.backgroundColor = kColor(0xFF4F53);
+    [CLTool gradualBackgroundColor:logoutBtn];
     [logoutBtn setTitle:@"安全退出" forState:UIControlStateNormal];
     logoutBtn.titleLabel.font = [UIFont systemFontOfSize:17];
     [logoutBtn addTarget:self action:@selector(logoutBtnClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -378,9 +380,9 @@
     UIButton * loginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     loginBtn.frame = CGRectMake(30, CGRectGetMaxY(line2.frame) + 48, kScreentWidth - 60, 44);
     [_loginView addSubview:loginBtn];
+    [CLTool gradualBackgroundColor:loginBtn];
     [loginBtn setTitle:@"登录" forState:UIControlStateNormal];
     loginBtn.titleLabel.font = [UIFont systemFontOfSize:18];
-    loginBtn.backgroundColor = kGlobalColor;
     [loginBtn addTarget:self action:@selector(loginBtn:) forControlEvents:UIControlEventTouchUpInside];
     
     // 忘记密码
@@ -401,13 +403,21 @@
     [registerBtn addTarget:self action:@selector(registerBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     registerBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     
-    // 快速登录
-    UIButton * fastLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    fastLoginBtn.frame = CGRectMake((kScreentWidth - 88) / 2, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 88, 44);
-    [_loginView addSubview:fastLoginBtn];
-    [fastLoginBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
-    [fastLoginBtn setTitle:@"快速登录" forState:UIControlStateNormal];
-    [fastLoginBtn addTarget:self action:@selector(fastLoginBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    // QQ快速登录
+    UIButton * qqLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    qqLoginBtn.frame = CGRectMake(((kScreentWidth / 2) - 88) / 2, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 88, 44);
+    [_loginView addSubview:qqLoginBtn];
+    [qqLoginBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
+    [qqLoginBtn setTitle:@"QQ登录" forState:UIControlStateNormal];
+    [qqLoginBtn addTarget:self action:@selector(qqLoginBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    // 微信快速登录
+    UIButton * wxLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    wxLoginBtn.frame = CGRectMake(kScreentWidth / 2 + ((kScreentWidth / 2) - 88) / 2, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 88, 44);
+    [_loginView addSubview:wxLoginBtn];
+    [wxLoginBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
+    [wxLoginBtn setTitle:@"微信登录" forState:UIControlStateNormal];
+    [wxLoginBtn addTarget:self action:@selector(wxLoginBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
 }
 
@@ -440,24 +450,40 @@
                     
                     if ([[responseObject objectForKey:@"status"] integerValue] == 10) {
                         
-                        _isTeacher = NO;
+                        _isTeacher = @"0";
                     } else if ([[responseObject objectForKey:@"status"] integerValue] == 11) {
-                        _isTeacher = YES;
+                        _isTeacher = @"1";
                     }
                     UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:@"登录成功" preferredStyle:UIAlertControllerStyleAlert];
                     [alert addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                         // 返回登录界面
                         dispatch_async(dispatch_get_main_queue(), ^{
-//                            NSLog(@"登录成功 - -%@", [responseObject objectForKey:@"data"]);
+                            NSLog(@"登录成功 - -%@", [responseObject objectForKey:@"data"]);
                             _userInfo = [NSDictionary dictionaryWithDictionary:[responseObject objectForKey:kData]];
                             
                             NSDictionary * dic = [responseObject objectForKey:@"data"];
+                            
+                            // 是否实名认证
+                            NSString * isIndentify = @"";
+                            if ([dic[kUser][kIsIndentify] respondsToSelector:@selector(isEqualToString:)]) {
+                                isIndentify = dic[kUser][kIsIndentify];
+                            }
+                            
+                            NSString * idNumber = @"";
+                            if ([dic[kUser][kIdNumber] respondsToSelector:@selector(isEqualToString:)]) {
+                                idNumber = dic[kUser][kIdNumber];
+                            }
+                            
                             _userInfo = @{kToken:dic[kToken],
                                           kHeadPic:dic[kUser][kHeadPic],
                                           kNickName:dic[kUser][kNickName],
                                           kPhone:dic[kUser][kPhone],
                                           kSubscriptionNum:dic[kSubscriptionNum],
                                           KAttentionNum:dic[KAttentionNum],
+                                          kUserID:dic[kUser][kId],
+                                          kIsLecturer:_isTeacher,
+                                          kIsIndentify:isIndentify,
+                                          kIdNumber:idNumber
                                           };
                             
                             // 保存到本地
@@ -496,12 +522,12 @@
     [_headImageView setImageWithURL:[NSURL URLWithString:imgStr]];
     
     _nickNameLabel.text = info[@"nickName"];
-    NSString * fansStr = [NSString stringWithFormat:@"粉丝: %@", info[kSubscriptionNum]];
+    NSString * fansStr = [NSString stringWithFormat:@"粉丝: %@", info[KAttentionNum]];
     NSMutableAttributedString * mFansStr = [[NSMutableAttributedString alloc] initWithString:fansStr];
     [mFansStr addAttribute:NSForegroundColorAttributeName value:kRedColor range:NSMakeRange(4, fansStr.length-4)];
     _fansLabel.attributedText = mFansStr;
 
-    NSString * takeStr = [NSString stringWithFormat:@"订阅: %@", info[KAttentionNum]];
+    NSString * takeStr = [NSString stringWithFormat:@"订阅: %@", info[kSubscriptionNum]];
     NSMutableAttributedString * mTakeStr = [[NSMutableAttributedString alloc] initWithString:takeStr];
     [mTakeStr addAttribute:NSForegroundColorAttributeName value:kRedColor range:NSMakeRange(4, takeStr.length-4)];
     _takeLabel.attributedText = mTakeStr;
@@ -527,16 +553,23 @@
 }
 
 #pragma mark - 快速登录操作
-- (void)fastLoginBtnClick:(UIButton *)sender {
-    NSLog(@"fastLoginBtnClick");
-    [self getUserInfoFromQQ];
+// QQ登录
+- (void)qqLoginBtnClick:(UIButton *)sender {
+    [self getUserInfoFromePlatform:UMSocialPlatformType_QQ];
 }
 
+// 微信登录
+- (void)wxLoginBtnClick:(UIButton *)sender {
+    if([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_WechatSession]) {
+        [self getUserInfoFromePlatform:UMSocialPlatformType_WechatSession];
+    } else {
+        [CLTool showAlert:@"请先安装微信" target:self];
+    }
+}
 
-#pragma mark - QQ快速登录
-- (void)getUserInfoFromQQ
+- (void)getUserInfoFromePlatform:(UMSocialPlatformType)platform
 {
-    [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_QQ currentViewController:self completion:^(id result, NSError *error) {
+    [[UMSocialManager defaultManager] getUserInfoWithPlatform:platform currentViewController:self completion:^(id result, NSError *error) {
         
         UMSocialUserInfoResponse *resp = result;
         if (error) {
@@ -557,9 +590,9 @@
                     // 向服务器发送数据成功, 将信息缓存到本地
                     if ([[responseObject objectForKey:@"status"] integerValue] == 10) {
                         
-                        _isTeacher = NO;
+                        _isTeacher = @"0";
                     } else if ([[responseObject objectForKey:@"status"] integerValue] == 11) {
-                        _isTeacher = YES;
+                        _isTeacher = @"1";
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
@@ -569,12 +602,34 @@
                         
                         NSDictionary * dic = [responseObject objectForKey:kData];
                         
+                        // 手机号
+                        NSString * phone = @"";
+                        if ([dic[kUser][kPhone] isEqual:[NSNull null]]) {
+                            
+                        } else {
+                            phone = dic[kUser][kPhone];
+                        }
+                        // 是否实名认证
+                        NSString * isIndentify = @"";
+                        if ([isIndentify respondsToSelector:@selector(isEqualToString:)]) {
+                            isIndentify = dic[kUser][kIsIndentify];
+                        }
+                        
+                        NSString * idNumber = @"";
+                        if ([idNumber respondsToSelector:@selector(isEqualToString:)]) {
+                            idNumber = dic[kUser][kIdNumber];
+                        }
+                        
                         _userInfo = @{kToken:dic[kToken],
                                       kHeadPic:dic[kUser][kHeadPic],
                                       kNickName:dic[kUser][kNickName],
                                       kPhone:dic[kUser][kPhone],
                                       kSubscriptionNum:dic[kSubscriptionNum],
                                       KAttentionNum:dic[KAttentionNum],
+                                      kUserID:dic[kUser][kId],
+                                      kIsLecturer:_isTeacher,
+                                      kIsIndentify:isIndentify,
+                                      kIdNumber:idNumber
                                       };
                         
                         // 存储到本地
@@ -597,6 +652,7 @@
 #pragma mark - 订阅
 - (void)takeBtnClick:(UIButton *)sender {
     SubscribeViewController * subscribeVC = [SubscribeViewController new];
+    subscribeVC.userId = [[NSUserDefaults standardUserDefaults] objectForKey:kUser][kUserID];
     [self.navigationController pushViewController:subscribeVC animated:YES];
 }
 
@@ -617,8 +673,87 @@
 #pragma mark - 推荐好友
 - (void)recommendBtnClick:(UIButton *)sender {
     NSLog(@"recommendBtnClick");
-    RecommendFriendViewController * recommendFriendVC = [RecommendFriendViewController new];
-    [self.navigationController pushViewController:recommendFriendVC animated:YES];
+//    RecommendFriendViewController * recommendFriendVC = [RecommendFriendViewController new];
+//    [self.navigationController pushViewController:recommendFriendVC animated:YES];
+    UIAlertController * alert = [UIAlertController new];
+    
+    // 微信好友
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"微信好友" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        if ([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_WechatSession]) {
+            [self shareWebPageToPlatformType:UMSocialPlatformType_WechatSession];
+        } else {
+            [CLTool showAlert:@"请先安装微信" target:self];
+        }
+    }]];
+    
+    
+    // 微信朋友圈
+    [alert addAction:[UIAlertAction actionWithTitle:@"微信朋友圈" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        if ([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_WechatSession]) {
+            [self shareWebPageToPlatformType:UMSocialPlatformType_WechatTimeLine];
+        } else {
+            [CLTool showAlert:@"请先安装微信" target:self];
+        }
+    }]];
+    
+    // QQ好友
+    [alert addAction:[UIAlertAction actionWithTitle:@"QQ好友" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        if ([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_QQ]) {
+            [self shareWebPageToPlatformType:UMSocialPlatformType_QQ];
+        } else {
+            [CLTool showAlert:@"请先安装QQ" target:self];
+        }
+    }]];
+    
+    // QQ空间
+    [alert addAction:[UIAlertAction actionWithTitle:@"QQ空间" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        if ([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_QQ]) {
+            [self shareWebPageToPlatformType:UMSocialPlatformType_Qzone];
+        } else {
+            [CLTool showAlert:@"请先安装QQ" target:self];
+        }
+    
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [self presentViewController:alert animated:YES completion:nil];
+
+}
+
+- (void)shareWebPageToPlatformType:(UMSocialPlatformType)platformType
+{
+    //创建分享消息对象
+    UMSocialMessageObject *messageObject = [UMSocialMessageObject messageObject];
+    
+    //创建网页内容对象
+//    NSString* thumbURL =  @"https://mobile.umeng.com/images/pic/home/social/img-1.png";
+    UMShareWebpageObject *shareObject = [UMShareWebpageObject shareObjectWithTitle:@"欢迎使用【荐股厅】" descr:@"【荐股厅】- 专业的股票信息平台! " thumImage:nil];
+    //设置网页地址
+    shareObject.webpageUrl = @"https://www.apple.com/itunes/";
+    
+    //分享消息对象设置分享内容对象
+    messageObject.shareObject = shareObject;
+    
+    //调用分享接口
+    [[UMSocialManager defaultManager] shareToPlatform:platformType messageObject:messageObject currentViewController:self completion:^(id data, NSError *error) {
+        UMSocialShareResponse *resp = data;
+        NSLog(@"%@, %@", resp.message, resp.originalResponse);
+        if (error) {
+            UMSocialLogInfo(@"************Share fail with error %@*********",error);
+        }else{
+//            if ([data isKindOfClass:[UMSocialShareResponse class]]) {
+            
+                //分享结果消息
+                UMSocialLogInfo(@"response message is %@",resp.message);
+                //第三方原始返回的数据
+                UMSocialLogInfo(@"response originalResponse data is %@",resp.originalResponse);
+//            }else{
+//                UMSocialLogInfo(@"response data is %@",data);
+//            }
+        }
+    }];
 }
 
 #pragma mark - 检查更新
@@ -662,7 +797,7 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
     }
-    if (_isTeacher) {
+    if ([_isTeacher isEqualToString:@"1"]) {
         cell.textLabel.text = _dataSource2[indexPath.row];
     }
     else  {
@@ -681,7 +816,7 @@
         MsgViewController * msgVC = [[MsgViewController alloc] init];
         [self.navigationController pushViewController:msgVC animated:YES];
     } else if (indexPath.row == 1) {
-        if (_isTeacher) {
+        if ([_isTeacher isEqualToString:@"1"]) {
             WithDrawViewController * withDrawVC = [WithDrawViewController new];
             [self.navigationController pushViewController:withDrawVC animated:YES];
         }

@@ -12,7 +12,10 @@
 
 @property (nonatomic, strong) NSMutableArray * moduleBtns;
 @property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, strong) NSMutableArray * moduleBtnTitleArr;
 
 - (void)btnClick:(UIButton *)sender;
+- (void)updateDataSource:(NSInteger)selectedIndex;
+- (void)initView;
 
 @end

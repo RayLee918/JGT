@@ -31,7 +31,7 @@
         // 头像
         self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 32.5, 32.5)];
         [self addSubview:self.icon];
-        self.icon.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"icon.png"]];
+        self.icon.image = kImageNamed(@"default_head.png");
         
         // 昵称
         self.nickNameLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.icon.frame) + 5, CGRectGetMinY(self.icon.frame), kScreentWidth - CGRectGetMaxX(self.icon.frame) + 10, 16.5)];
@@ -81,9 +81,12 @@
         // 立即定购
         self.orderBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         self.orderBtn.frame = CGRectMake(self.customView.frame.size.width - kMargin10 - 100, (self.customView.frame.size.height - 31) / 2, 100, 31);
+        [CLTool gradualBackgroundColor:self.orderBtn];
         [self.customView addSubview:self.orderBtn];
-        [self.orderBtn setBackgroundImage:[UIImage imageNamed:@"order.png"] forState:UIControlStateNormal];
-        //        [self.orderBtn setTitle:@"立即订购" forState:UIControlStateNormal];
+        [self.orderBtn setBackgroundImage:[UIImage imageNamed:@"btn_background.png"] forState:UIControlStateNormal];
+        [self.orderBtn setTitle:@"阅读文档" forState:UIControlStateNormal];
+        self.orderBtn.layer.cornerRadius = 31/2;
+        self.orderBtn.layer.masksToBounds = YES;
         
     }
     return self;
