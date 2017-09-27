@@ -14,6 +14,7 @@
 {
     NSMutableArray * _dataSource;
     UITableView * _tablView;
+    NSArray * _colorArray;
 }
 @end
 
@@ -24,8 +25,9 @@
     // Do any additional setup after loading the view.
     
     _dataSource = [NSMutableArray arrayWithCapacity:0];
+    _colorArray = @[@{@"firstColor":kColor(0x419BE3), @"secondColor":kColor(0x37A0F4)}, @{@"firstColor":kColor(0xD64E2C), @"secondColor":kColor(0xF95B34)}, @{@"firstColor":kColor(0x017C6E), @"secondColor":kColor(0x017C6E)}];
     [self initView];
-    [self getCardDataSource];
+//    [self getCardDataSource];
 }
 
 
@@ -45,7 +47,7 @@
 
 - (void)getCardDataSource {
     
-//    _dataSource = [NSMutableArray arrayWithArray:@[@{@"bank":@"交通银行", @"type":@"储蓄卡", @"cardNumber":@"1234567891234567"}, @{@"bank":@"交通银行", @"type":@"储蓄卡", @"cardNumber":@"1234567891234567"}]];
+//    _dataSource = [NSMutableArray arrayWithArray:@[@{@"bankName":@"交通银行", @"cardType":@"储蓄卡", @"cardNum":@"1234567891234567"}, @{@"bankName":@"交通银行", @"cardType":@"储蓄卡", @"cardNum":@"1234567891234567"}]];
 //    [_tablView reloadData];
     // user/manageCard/removeCard
     NSString * url = [NSString stringWithFormat:@"%@/user/manageCard/getCardList", kJGT];
@@ -54,6 +56,7 @@
         if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
             if (![[responseObject objectForKey:kData] isEqual:[NSNull null]]) {
                 _dataSource = [NSMutableArray arrayWithArray:[responseObject objectForKey:kData]];
+                NSLog(@"card - data - %@", [responseObject objectForKey:kData]);
                 [_tablView reloadData];
             }
         } else {
@@ -80,6 +83,7 @@
     [self.view addSubview:tableView];
     tableView.dataSource = self;
     tableView.delegate = self;
+    tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tablView = tableView;
 }
 
@@ -132,23 +136,40 @@
         cell = [[CardCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
     }
     
+    // 随机背景渐变色
+    NSDictionary * colorDic = _colorArray[indexPath.row % 3];
+    [CLTool gradualBackgroundColorLeftAndRight:cell.cardImageView firstColor:colorDic[@"firstColor"] secondColor:colorDic[@"secondColor"]];
+    
+    // 设置卡属性
+    // 银行名
     NSDictionary * dic = _dataSource[indexPath.row];
-    NSString * cardNum = dic[@"cardNum"];
     if (![dic[@"bankName"] isEqual:[NSNull null]]) {
         
         cell.bankLabel.text = dic[@"bankName"];
     }
     
-    if ([cardNum hasPrefix:@"6"]) {
-        cell.typeLabel.text = @"储蓄卡";
-    } else {
-        cell.typeLabel.text = @"信用卡";
+    // 卡类型
+    if (![dic[@"cardType"] isEqual:[NSNull null]]) {
+        
+        cell.typeLabel.text = dic[@"cardType"];
     }
-    
+
+    // 卡号
+    NSString * cardNum = dic[@"cardNum"];
     if (cardNum.length >= 4) {
         cardNum = [cardNum substringFromIndex:cardNum.length - 4];
         cell.cardNumberLabel.text = [NSString stringWithFormat:@"**** **** **** %@", cardNum];
     }
+
+    // 发卡组织
+    NSString * bankType = dic[@"bankType"];
+    if ([bankType isEqualToString:@"VISA"]) {
+        cell.issueImageView.image = kImageNamed(bankType);
+    } else {
+        cell.issueImageView.frame= CGRectMake(cell.cardImageView.frame.size.width - 20 - 51, cell.cardImageView.frame.size.height - 15 - 33, 51, 33);
+        cell.issueImageView.image = kImageNamed(@"union.png");
+    }
+    
     return cell;
 }
 

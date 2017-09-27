@@ -92,11 +92,12 @@
 #pragma mark - 模块按钮动态数据
 - (void)getModuleData {
     
+    // 最新消息滚动
+    _titleArray = @[@"李**同学购买了课程", @"张**同学购买了课程", @"赵**同学购买了课程"];
     NSString * urlStr = [NSString stringWithFormat:@"%@/home/getCategoryList", kJGT];
     [[AFHTTPSessionManager manager] GET:urlStr parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
             _moduleBtnTitleArr = [NSMutableArray arrayWithArray:[responseObject objectForKey:kData]];
-            _titleArray = @[@"123456789", @"987654321", @"abcdefghi"];
             
             self.customVC.moduleBtnTitleArr = _moduleBtnTitleArr;
             NSInteger value = 0;
@@ -116,10 +117,8 @@
                 
                 // 更新标题
                 if (_titleArray.count >= 1) {
-//                    [NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) {
-//                        unsigned int index = arc4random() % _titleArray.count;
-//                        _titleLabel.text = _titleArray[index];
-//                    }];
+                    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(updateTitle) userInfo:nil repeats:YES];
+                    [timer fire];
                 }
             });
         }
@@ -128,6 +127,11 @@
     }];
 //    _moduleBtnTitleArr = [NSMutableArray arrayWithArray:@[@"股票", @"基金", @"贵金属", @"外汇", @"分析", @"债券", @"顾问", @"更多", @"商品期货", @"股指期货"]];
     
+}
+
+- (void)updateTitle {
+    unsigned int index = arc4random() % _titleArray.count;
+    _titleLabel.text = _titleArray[index];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

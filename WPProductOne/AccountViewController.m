@@ -71,9 +71,10 @@
     // Do any additional setup after loading the view.
     
     _dataSource1 = @[@"我的订单", @"帐单明细", @"银行卡管理"];
-    _dataSource2 = @[@"我的消息", @"资金提现", @"银行卡管理"];
-    _isTeacher = [[NSUserDefaults standardUserDefaults] objectForKey:kUser][kIsLecturer];
-    _isTeacher = @"0";
+    _dataSource2 = @[@"我的订单", @"帐单明细", @"银行卡管理"];
+//    _dataSource2 = @[@"我的消息", @"资金提现", @"银行卡管理"];
+//    _isTeacher = [[NSUserDefaults standardUserDefaults] objectForKey:kUser][kIsLecturer];
+//    _isTeacher = @"0";
     NSLog(@"isTeacher - %@", _isTeacher);
 }
 
@@ -405,18 +406,20 @@
     
     // QQ快速登录
     UIButton * qqLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    qqLoginBtn.frame = CGRectMake(((kScreentWidth / 2) - 88) / 2, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 88, 44);
+    qqLoginBtn.frame = CGRectMake(kScreentWidth / 2 - 10 - 44, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 44, 44);
     [_loginView addSubview:qqLoginBtn];
     [qqLoginBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
-    [qqLoginBtn setTitle:@"QQ登录" forState:UIControlStateNormal];
+//    [qqLoginBtn setTitle:@"QQ登录" forState:UIControlStateNormal];
+    [qqLoginBtn setBackgroundImage:kImageNamed(@"login_fast_qq.png") forState:UIControlStateNormal];
     [qqLoginBtn addTarget:self action:@selector(qqLoginBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     // 微信快速登录
     UIButton * wxLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    wxLoginBtn.frame = CGRectMake(kScreentWidth / 2 + ((kScreentWidth / 2) - 88) / 2, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 88, 44);
+    wxLoginBtn.frame = CGRectMake(kScreentWidth / 2 + 10, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 44, 44);
     [_loginView addSubview:wxLoginBtn];
     [wxLoginBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
-    [wxLoginBtn setTitle:@"微信登录" forState:UIControlStateNormal];
+//    [wxLoginBtn setTitle:@"微信登录" forState:UIControlStateNormal];
+    [wxLoginBtn setBackgroundImage:kImageNamed(@"login_fast_weixin.png") forState:UIControlStateNormal];
     [wxLoginBtn addTarget:self action:@selector(wxLoginBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
 }
@@ -495,6 +498,8 @@
                             _pwdTF.text = @"";
                             
                             // 设置个人信息
+#pragma mark - 要删除的
+                            _isTeacher = @"0";
                             [self setPersonInfo:_userInfo];
                             [_tableView reloadData];
                             _settingBtn.hidden = NO;
@@ -560,11 +565,12 @@
 
 // 微信登录
 - (void)wxLoginBtnClick:(UIButton *)sender {
-    if([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_WechatSession]) {
-        [self getUserInfoFromePlatform:UMSocialPlatformType_WechatSession];
-    } else {
-        [CLTool showAlert:@"请先安装微信" target:self];
-    }
+    [CLTool showAlert:@"暂不支持微信登录" target:self];
+//    if([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_WechatSession]) {
+//        [self getUserInfoFromePlatform:UMSocialPlatformType_WechatSession];
+//    } else {
+//        [CLTool showAlert:@"请先安装微信" target:self];
+//    }
 }
 
 - (void)getUserInfoFromePlatform:(UMSocialPlatformType)platform
@@ -816,14 +822,16 @@
         MsgViewController * msgVC = [[MsgViewController alloc] init];
         [self.navigationController pushViewController:msgVC animated:YES];
     } else if (indexPath.row == 1) {
-        if ([_isTeacher isEqualToString:@"1"]) {
-            WithDrawViewController * withDrawVC = [WithDrawViewController new];
-            [self.navigationController pushViewController:withDrawVC animated:YES];
-        }
-        else {
-            BillViewController * billVC = [BillViewController new];
-            [self.navigationController pushViewController:billVC animated:YES];
-        }
+//        if ([_isTeacher isEqualToString:@"1"]) {
+//            WithDrawViewController * withDrawVC = [WithDrawViewController new];
+//            [self.navigationController pushViewController:withDrawVC animated:YES];
+//        }
+//        else {
+//            BillViewController * billVC = [BillViewController new];
+//            [self.navigationController pushViewController:billVC animated:YES];
+//        }
+        BillViewController * billVC = [BillViewController new];
+        [self.navigationController pushViewController:billVC animated:YES];
     } else if (indexPath.row == 2) {
         CardViewController * cardVC = [CardViewController new];
         [self.navigationController pushViewController:cardVC animated:YES];

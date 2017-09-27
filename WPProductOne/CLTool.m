@@ -10,7 +10,7 @@
 
 @implementation CLTool
 
-#pragma mark - 返回的是否有数据
+#pragma mark - 网络请求返回数据判断
 + (BOOL)isHaveData:(id)obj {
     
     if ([[obj objectForKey:kStatus] integerValue] == 1) {
@@ -66,7 +66,7 @@
     gradientLayer.frame = targetView.bounds;
     
     //将CAGradientlayer对象添加在我们要设置背景色的视图的layer层
-    [targetView.layer addSublayer:gradientLayer];
+    [targetView.layer insertSublayer:gradientLayer atIndex:0];
     
     //设置渐变区域的起始和终止位置（范围为0-1）
     gradientLayer.startPoint = CGPointMake(0, 0);
@@ -79,6 +79,28 @@
     //设置颜色分割点（范围：0-1）
     gradientLayer.locations = @[@(0.0f), @(1.0f)];
 }
+
++ (void)gradualBackgroundColorLeftAndRight:(UIView *)targetView firstColor:(UIColor *)firstColor secondColor:(UIColor *)secondColor {
+    
+    //初始化CAGradientlayer对象，使它的大小为UIView的大小
+    CAGradientLayer * gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = targetView.bounds;
+    
+    //将CAGradientlayer对象添加在我们要设置背景色的视图的layer层
+    [targetView.layer insertSublayer:gradientLayer atIndex:0];
+    
+    //设置渐变区域的起始和终止位置（范围为0-1）
+    gradientLayer.startPoint = CGPointMake(0, 0);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    
+    //设置颜色数组
+    gradientLayer.colors = @[(__bridge id)firstColor.CGColor,
+                             (__bridge id)secondColor.CGColor];
+    
+    //设置颜色分割点（范围：0-1）
+    gradientLayer.locations = @[@(0.0f), @(1.0f)];
+}
+
 
 #pragma mark - 弹窗提示
 + (void)showAlert:(NSString *)msg target:(UIViewController *)target {

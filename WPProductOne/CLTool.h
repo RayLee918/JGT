@@ -10,7 +10,7 @@
 
 @interface CLTool : NSObject
 
-// 返回的是否有数据
+// 网络请求返回数据判断
 + (BOOL)isHaveData:(id)obj;
 
 // 文字分散对齐
@@ -18,6 +18,7 @@
 
 // 背景颜色渐变
 + (void)gradualBackgroundColor:(UIView *)targetView;
++ (void)gradualBackgroundColorLeftAndRight:(UIView *)targetView firstColor:(UIColor *)firstColor secondColor:(UIColor *)secondColor;
 
 // 弹窗提示
 + (void)showAlert:(NSString *)msg target:(UIViewController *)target;

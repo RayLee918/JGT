@@ -58,7 +58,7 @@
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
-//        NSLog(@"orderData - %@", responseObject);
+        NSLog(@"orderData - %@", responseObject);
         if ([CLTool isHaveData:responseObject]) {
             
             _orderDataSource = [responseObject objectForKey:kData];
@@ -94,11 +94,10 @@
 }
 
 - (void)getAttentionData {
-    NSLog(@"getAttentionData -- ");
     NSString * msgUrlStr = [NSString stringWithFormat:@"%@/center/user/getLectList", kJGT];
     [[AFHTTPSessionManager manager] GET:msgUrlStr parameters:@{} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if ([CLTool isHaveData:responseObject]) {
-            NSLog(@"attention - %@", responseObject);
+            NSLog(@"attentionData - %@", responseObject);
             
             _attentionDataSource = [responseObject objectForKey:kData];
             dispatch_async(dispatch_get_main_queue(), ^{

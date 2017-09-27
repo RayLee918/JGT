@@ -20,6 +20,7 @@
     UIButton * _weixinBtn;
     UIButton * _zhifubaoBtn;
     NSString * _payMethod;
+    NSDictionary * _weixinDic;
 }
 @end
 
@@ -373,9 +374,10 @@
     NSLog(@"buyBtnClick3");
     
     if ([_payMethod isEqualToString:@"weixin"]) {
-        _backgroundBtn.hidden = YES;
-        NSLog(@"weixin zhifu");
-        [self payMethod:_payMethod];
+        [CLTool showAlert:@"暂不支持微信支付" target:self];
+//        _backgroundBtn.hidden = YES;
+//        NSLog(@"weixin zhifu");
+//        [self payMethod:_payMethod];
         
     } else if ([_payMethod isEqualToString:@"zhifubao"]) {
         _backgroundBtn.hidden = YES;
@@ -390,9 +392,12 @@
 #pragma mark - 发起支付请求
 - (void)payMethod:(NSString *)payMethod {
     NSString * str = [NSString stringWithFormat:@"%@/order/creatOrder", kJGT];
-    [[AFHTTPSessionManager manager] GET:str parameters:@{@"courseId":self.courseId, @"payType":@"weixin"} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [[AFHTTPSessionManager manager] GET:str parameters:@{@"courseId":self.courseId, @"payType":_payMethod} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         if ([[responseObject objectForKey:kStatus] integerValue] == 1) {
+            
+            _weixinDic = responseObject[kData];
+                // 微信支付
                 if ([payMethod isEqualToString:@"weixin"]) {
                     NSDictionary * dic = [responseObject objectForKey:kData];
                     PayReq * request = [[PayReq alloc] init];
@@ -403,9 +408,10 @@
                     request.timeStamp = [dic[@"timeStamp"] intValue];
                     request.sign = dic[@"sign"];
                     
-                    // 发起微信支付请求
-                    BOOL isSuccessSendReq = [WXApi sendReq:request];
-                    NSLog(@"isSuccessSendReq - %d", isSuccessSendReq);
+//                    BOOL isSuccessSendReq = [WXApi sendReq:request];
+//                    NSLog(@"isSuccessSendReq - %d", isSuccessSendReq);
+                    
+                // 支付宝支付
                 } else if ([payMethod isEqualToString:@"zhifubao"]) {
                     
                     [[AlipaySDK defaultService] payOrder:[responseObject objectForKey:kData] fromScheme:@"WPProductOneAlipay" callback:^(NSDictionary *resultDic) {
@@ -423,6 +429,19 @@
                         if ([resultDic[@"resultStatus"] isEqualToString:@"9000"]) {
                             NSLog(@"zhifubao - buy - 支付成功");
                             [CLTool showAlert:@"课程购买成功" target:self];
+//                            NSString * result = resultDic[@"result"];
+//                            
+//                            NSData *jsonData = [result dataUsingEncoding:NSUTF8StringEncoding];
+//                            NSError *err;
+//                            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers  error:&err];
+//                            
+//                            NSString * str = [NSString stringWithFormat:@"%@/order/payOrder", kJGT];
+//                            NSDictionary * param = @{@"orderId":dic[@"alipay_trade_app_pay_response"][@"out_trade_no"], @"payType":@"zhifubao"};
+//                            [[AFHTTPSessionManager manager] GET:str parameters:param progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//                                NSLog(@"zhifubao - 通知服务器端成功");
+//                            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//                                NSLog(@"zhifubao - 通知服务器端失败");
+//                            }];
                         } else {
                             NSLog(@"zhifubao - buy - 支付失败");
                             [CLTool showAlert:@"支付失败" target:self];
@@ -449,6 +468,15 @@
                 //服务器端查询支付通知或查询API返回的结果再提示成功
                 NSLog(@"weixin - buy - 支付成功, %@", resp);
                 [CLTool showAlert:@"课程购买成功" target:self];
+                {
+                    NSString * str = [NSString stringWithFormat:@"%@/order/payOrder", kJGT];
+                    NSDictionary * dic = @{@"orderId":_weixinDic[@"orderId"], @"payType":@"weixin"};
+                    [[AFHTTPSessionManager manager] GET:str parameters:dic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                        NSLog(@"zhifubao - 通知服务器端成功");
+                    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                        NSLog(@"zhifubao - 通知服务器端失败");
+                    }];
+                }
                 break;
             default:
                 NSLog(@"weixin - buy - 支付失败, %@, retcode=%d", resp, resp.errCode);

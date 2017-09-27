@@ -14,5 +14,6 @@
 @property (nonatomic, strong) UILabel * bankLabel;
 @property (nonatomic, strong) UILabel * typeLabel;
 @property (nonatomic, strong) UILabel * cardNumberLabel;
+@property (nonatomic, strong) UIImageView * issueImageView;
 
 @end
