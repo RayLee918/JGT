@@ -64,6 +64,8 @@
     // 标题
     UILabel * _titleLabel;
     NSArray * _titleArray;
+    
+    NSIndexPath * _indexPaht;
 }
 @end
 
@@ -766,6 +768,8 @@
         [mStr addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(str.length - 5, 5)];
         [mStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"PingFangSC-Semibold" size:12.5] range:NSMakeRange(str.length - 5, 5)];
         cell.secondLabel.attributedText = mStr;
+    
+        cell.orderLabel.text = @"立即订购";
         
         return cell;
     }   else if (tableView.tag == 32) {
@@ -875,13 +879,20 @@
     }
 }
 
+- (void)orderBtnClick {
+    
+}
+
 #pragma mark - 日历事件
 - (void)calendarBtnClick:(UIButton *)sender {
     NSLog(@"calendarBtnClick");
-    CalendarViewController * calendarVC = [CalendarViewController new];
-    [self.navigationController pushViewController:calendarVC animated:YES];
+//    CalendarViewController * calendarVC = [CalendarViewController new];
+//    [self.navigationController pushViewController:calendarVC animated:YES];
 //    CalendarController * calendarVC = [CalendarController new];
 //    [self.navigationController pushViewController:calendarVC animated:YES];
+    
+    // 聊天管理类
+//     [[NIMSDK sharedSDK] chatManager];
     
 }
 

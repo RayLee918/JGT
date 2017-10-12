@@ -10,7 +10,7 @@
 #import "RecommendViewController.h"
 #import "CustomViewController.h"
 #import "AccountViewController.h"
-
+#import "AppDelegate.h"
 
 @interface RootViewController ()
 {
@@ -124,9 +124,11 @@
     [_tabbarBtns addObject:accountBtn];
     self.tabbarBtns = _tabbarBtns;
     
-    
     // 添加自定义视图
     [self.view addSubview:_tabbarView];
+    
+    AppDelegate * delegate = [UIApplication sharedApplication].delegate;
+    delegate.tabbarView = _tabbarView;
 }
 
 #pragma mark - 标签按钮响应

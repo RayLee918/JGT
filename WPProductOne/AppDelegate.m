@@ -32,6 +32,103 @@
     
     // RootViewController
     
+    // 注册微信
+    [WXApi registerApp:kAppKeyWeiXin];
+    
+    // JPush
+    [self setupJPush:launchOptions];
+    
+    // token 上传
+    [self uploadToken];
+    
+    // 更改导航主题
+    [self changeNavigation];
+    
+    // 获取设备信息
+    [self getDevice];
+    
+    // UMShare
+    [self setupUMShare];
+
+    // NIM
+    [self setupIM];
+    
+    return YES;
+}
+
+#pragma mark - NIM
+- (void)setupIM {
+    
+}
+
+#pragma mark - UMShare
+- (void)setupUMShare {
+    // ------------------- UMShare -------------------
+    /* 打开日志 */
+    //    [[UMSocialManager defaultManager] openLog:YES];
+    
+    // 打开图片水印
+    //[UMSocialGlobal shareInstance].isUsingWaterMark = YES;
+    [UMSocialGlobal shareInstance].isClearCacheWhenGetUserInfo = NO;
+    
+    /* 设置友盟appkey */
+    [[UMSocialManager defaultManager] setUmSocialAppkey:kUShareAppkey];
+    NSLog(@"um version - %@", [UMSocialGlobal umSocialSDKVersion]);
+    
+    // 注册各个平台的appkey, appid
+    [self configUSharePlatforms];
+}
+
+#pragma mark 获取设备信息
+- (void)getDevice {
+    // 获取设备信息
+    NSString * deviceStr = [self deviceString];
+    [[NSUserDefaults standardUserDefaults] setValue:deviceStr forKey:@"device"];
+}
+
+#pragma mark - 更改导航主题
+- (void)changeNavigation {
+    // 更改导航主题
+    UINavigationBar * bar = [UINavigationBar appearance];
+    bar.barTintColor = [UIColor colorWithPatternImage:kImageNamed(@"background_color_64.png")];
+    bar.tintColor = kWhiteColor;
+    bar.translucent = NO;
+    [bar setTitleTextAttributes:@{NSForegroundColorAttributeName:kWhiteColor}];
+    [bar setBackgroundImage:[UIImage new]
+             forBarPosition:UIBarPositionAny
+                 barMetrics:UIBarMetricsDefault];
+    [bar setShadowImage:[UIImage new]];
+}
+
+#pragma mark - Token上传
+- (void)uploadToken {
+    // ------------------- 打开程序, 传给服务器端Token -------------------
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
+        
+        NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
+        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
+        AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+        [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+    }
+}
+
+#pragma mark - 文件路径及清除缓存
+- (void)testFilePath {
+    // ------------------- 文件路径及清除缓存 -------------------
+    NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    //    NSString *libraryPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
+    NSLog(@"%@", docPath);
+    //    NSLog(@"%@, %@", libraryPath, [ClearCacheTool getCacheSizeWithFilePath:libraryPath]);
+}
+
+#pragma mark - JPush
+- (void)setupJPush:(NSDictionary *)launchOptions {
     // ------------------- 初始化APNs代码 -------------------
     JPUSHRegisterEntity * entity = [[JPUSHRegisterEntity alloc] init];
     entity.types = JPAuthorizationOptionAlert|JPAuthorizationOptionBadge|JPAuthorizationOptionSound;
@@ -48,70 +145,6 @@
                           channel:@"AppStore"
                  apsForProduction:YES
             advertisingIdentifier:advertisingId];
-    
-    // ------------------- 文件路径及清除缓存 -------------------
-    NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-//    NSString *libraryPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
-    NSLog(@"%@", docPath);
-//    NSLog(@"%@, %@", libraryPath, [ClearCacheTool getCacheSizeWithFilePath:libraryPath]);
-    
-    // 日期
-//    NSDate * date = [NSDate date];
-//    NSInteger timeInterval = [date timeIntervalSince1970];
-//    NSLog(@"%@, %@", date, [NSString stringWithFormat:@"%ld", timeInterval]);
-
-    // 注册微信
-    [WXApi registerApp:kAppKeyWeiXin];
-    
-    // 打开程序, 传给服务器端Token
-    if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
-        
-        NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
-        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
-        AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
-        [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
-            
-        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            
-        }];
-    }
-    
-    // 更改导航主题
-    UINavigationBar * bar = [UINavigationBar appearance];
-    bar.barTintColor = [UIColor colorWithPatternImage:kImageNamed(@"background_color_64.png")];
-//    [CLTool gradualBackgroundColor:bar];
-    bar.tintColor = kWhiteColor;
-    bar.translucent = NO;
-    [bar setTitleTextAttributes:@{NSForegroundColorAttributeName:kWhiteColor}];
-    [bar setBackgroundImage:[UIImage new]
-                       forBarPosition:UIBarPositionAny
-                           barMetrics:UIBarMetricsDefault];
-    [bar setShadowImage:[UIImage new]];
-    
-    // 获取设备信息
-    NSString * deviceStr = [self deviceString];
-    [[NSUserDefaults standardUserDefaults] setValue:deviceStr forKey:@"device"];
-    
-    // ------------------- UMShare -------------------
-    /* 打开日志 */
-//    [[UMSocialManager defaultManager] openLog:YES];
-    
-    // 打开图片水印
-    //[UMSocialGlobal shareInstance].isUsingWaterMark = YES;
-    [UMSocialGlobal shareInstance].isClearCacheWhenGetUserInfo = NO;
-    
-    /* 设置友盟appkey */
-    [[UMSocialManager defaultManager] setUmSocialAppkey:kUShareAppkey];
-    NSLog(@"um version - %@", [UMSocialGlobal umSocialSDKVersion]);
-    
-    // 注册各个平台的appkey, appid
-    [self configUSharePlatforms];
-    
-//    [self getUserInfoForPlatform:UMSocialPlatformType_QQ];
-    
-    return YES;
 }
 
 #pragma mark - 微信支付回调

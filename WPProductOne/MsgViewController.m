@@ -43,8 +43,8 @@
     
     // 初始三个数据源
     [self getOrderData];
-    [self getMsgData];
-    [self getAttentionData];
+//    [self getMsgData];
+//    [self getAttentionData];
 }
 
 #pragma mark - 请求我的订单数据
@@ -62,7 +62,6 @@
         if ([CLTool isHaveData:responseObject]) {
             
             _orderDataSource = [responseObject objectForKey:kData];
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_orderTableView reloadData];
             });
@@ -249,7 +248,11 @@
         NSDictionary * dic = _orderDataSource[indexPath.row];
         NSString * imgStr = [NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"headPic"]];
         [cell.icon setImageWithURL:[NSURL URLWithString:imgStr]];
-        cell.nickNameLbl.text = dic[@"lectName"];
+        
+        if (![dic[@"lectName"] isEqual:[NSNull null]]) {
+            
+            cell.nickNameLbl.text = dic[@"lectName"];
+        }
         NSInteger dateInt = [dic[@"cts"] integerValue] / 1000;
         cell.dateLbl.text = [CLTool dateConvert:[NSString stringWithFormat:@"%ld", dateInt]];
         
@@ -261,9 +264,11 @@
         NSString * str = @"并享受全部VIP课程";
         UIColor * color = kColor(0xFF615E);
         NSMutableAttributedString * mStr = [[NSMutableAttributedString alloc] initWithString:str];
-        [mStr addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(str.length - 5, 5)];
+        [mStr addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(mStr.length - 5, 5)];
         [mStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"PingFangSC-Semibold" size:12.5] range:NSMakeRange(str.length - 5, 5)];
         cell.secondLabel.attributedText = mStr;
+    
+        cell.orderLabel.text = @"阅读文档";
         
         return cell;
     } else if (tableView == _msgTableView) {
@@ -299,8 +304,13 @@
     if (tableView == _orderTableView) {
         ReadViewController * readVC = [ReadViewController new];
         NSDictionary * dic = _orderDataSource[indexPath.row];
-        readVC.courseDoc = [NSString stringWithFormat:@"%@/downLoad/download?fileid=%@", kJGT, dic[@"courseDoc"]];
-        [self.navigationController pushViewController:readVC animated:YES];
+        if (![dic[@"courseDoc"] isEqual:[NSNull null]]) {
+            readVC.courseName = dic[@"courseName"];
+            readVC.courseDoc = [NSString stringWithFormat:@"%@/downLoad/download?fileid=%@", kJGT, dic[@"courseDoc"]];
+            [self.navigationController pushViewController:readVC animated:YES];
+        } else {
+            [CLTool showAlert:@"还没有上传该课程" target:self];
+        }
     } else if (tableView == _attentionTableView) {
         TeacherDetailViewController * teacherDetailVC = [[TeacherDetailViewController alloc] init];
         teacherDetailVC.userId = _attentionDataSource[indexPath.row][@"lecturerId"];

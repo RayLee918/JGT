@@ -51,7 +51,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    _isTeacher = @"";
+    _isTeacher = @"0";
+    _pageCode = @"";
     [self initView];
 }
 
@@ -232,11 +233,10 @@
     // 注册
     UIButton * registerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     registerBtn.frame = CGRectMake(30, CGRectGetMaxY(teacherBtn.frame) + 20, kScreentWidth - 60, 44);
+    [CLTool gradualBackgroundColor:registerBtn];
     [scrollView addSubview:registerBtn];
     [registerBtn setTitle:@"注册" forState:UIControlStateNormal];
     registerBtn.titleLabel.font = [UIFont systemFontOfSize:18];
-//    registerBtn.backgroundColor = kGlobalColor;
-    [CLTool gradualBackgroundColor:registerBtn];
     [registerBtn addTarget:self action:@selector(registerBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     // 备注
@@ -432,7 +432,7 @@
             
         }];
         // 获取验证码按钮展示
-        __block NSInteger value = 10;
+        __block NSInteger value = 60;
         sender.userInteractionEnabled = NO;
         _timer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
             NSLog(@"subscribeBtnClick - %ld", value);

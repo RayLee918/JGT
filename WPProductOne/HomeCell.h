@@ -22,5 +22,6 @@
 @property (nonatomic, strong) UILabel * firstLabel;
 @property (nonatomic, strong) UILabel * secondLabel;
 @property (nonatomic, strong) UIButton * orderBtn;
+@property (nonatomic, strong) UILabel * orderLabel;
 
 @end

@@ -81,14 +81,24 @@
         self.secondLabel.textColor = kColor(0x252525);
         
         // 立即定购
-        self.orderBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.orderBtn.frame = CGRectMake(self.customView.frame.size.width - kMargin10 - 100, (self.customView.frame.size.height - 31) / 2, 100, 31);
-        [self.customView addSubview:self.orderBtn];
-        [self.orderBtn setBackgroundImage:[UIImage imageNamed:@"btn_background.png"] forState:UIControlStateNormal];
-        [self.orderBtn setTitle:@"立即订购" forState:UIControlStateNormal];
-        self.orderBtn.layer.cornerRadius = 15.5;
-        self.orderBtn.layer.masksToBounds = YES;
-        [CLTool gradualBackgroundColor:self.orderBtn];
+//        self.orderBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//        self.orderBtn.frame = CGRectMake(self.customView.frame.size.width - kMargin10 - 100, (self.customView.frame.size.height - 31) / 2, 100, 31);
+//        [self.customView addSubview:self.orderBtn];
+//        [self.orderBtn setBackgroundImage:[UIImage imageNamed:@"btn_background.png"] forState:UIControlStateNormal];
+//        [self.orderBtn setTitle:@"立即订购" forState:UIControlStateNormal];
+//        self.orderBtn.layer.cornerRadius = 15.5;
+//        self.orderBtn.layer.masksToBounds = YES;
+//        [CLTool gradualBackgroundColor:self.orderBtn];
+        
+        self.orderLabel = [UILabel new];
+        self.orderLabel.frame = CGRectMake(self.customView.frame.size.width - kMargin10 - 100, (self.customView.frame.size.height - 31) / 2, 100, 31);
+        [self.customView addSubview:self.orderLabel];
+        self.orderLabel.textColor = kWhiteColor;
+        self.orderLabel.backgroundColor = [UIColor colorWithPatternImage:kImageNamed(@"background_color.png")];
+        self.orderLabel.layer.cornerRadius = 15.5;
+        self.orderLabel.layer.masksToBounds = YES;
+        self.orderLabel.textAlignment = NSTextAlignmentCenter;
+        
     }
     return self;
 }

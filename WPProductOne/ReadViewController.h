@@ -11,5 +11,5 @@
 @interface ReadViewController : UIViewController
 
 @property (nonatomic, strong) NSString * courseDoc;
-
+@property (nonatomic, strong) NSString * courseName;
 @end

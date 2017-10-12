@@ -10,6 +10,27 @@
 
 @implementation CLTool
 
+#pragma mark - 隐藏导航栏, 设置背景为白色, 设置返回按钮标题为空
++ (void)globalSetting:(UIViewController *)vc
+isNavigationBarHidden:(BOOL)yesOrNo
+      backgroundColor:(UIColor *)color
+                title:(NSString *)title {
+    // 隐藏导航栏
+    vc.navigationController.navigationBar.hidden = yesOrNo;
+    
+    // 设置控制器视图的背景色
+    vc.view.backgroundColor = color;
+    
+    // 设置标题
+    vc.title = title;
+    
+    
+    // 返回按钮
+    UIBarButtonItem * backItem = [[UIBarButtonItem alloc] init];
+    backItem.title = @"";
+    vc.navigationItem.backBarButtonItem = backItem;
+}
+
 #pragma mark - 网络请求返回数据判断
 + (BOOL)isHaveData:(id)obj {
     
@@ -66,7 +87,7 @@
     gradientLayer.frame = targetView.bounds;
     
     //将CAGradientlayer对象添加在我们要设置背景色的视图的layer层
-    [targetView.layer insertSublayer:gradientLayer atIndex:0];
+    [targetView.layer insertSublayer:gradientLayer atIndex:1];
     
     //设置渐变区域的起始和终止位置（范围为0-1）
     gradientLayer.startPoint = CGPointMake(0, 0);

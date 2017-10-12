@@ -30,6 +30,7 @@
 #import "WXApi.h"
 #import "MBProgressHUD.h"
 #import "JPUSHService.h"
+#import <NIMSDK/NIMSDK.h>
 
 
 // ------------------- 尺寸 -------------------
@@ -86,9 +87,20 @@
 // 字体颜色
 #define kTextColor [UIColor colorWithRed:(((0x1F1F1F & 0xFF0000) >> 16))/255.0 green:(((0x1F1F1F &0xFF00) >>8))/255.0 blue:((0x1F1F1F &0xFF))/255.0 alpha:1.0]
 
-#define kJGT @"http://192.168.1.144:8080/jgt"
-#define kJGTGetImage @"http://192.168.1.144:8080/jgt/downLoad/img?objKey="
-//#define kJGTGetImage @"http://49:93:161:92:8080/jgt/downLoad/img?objKey="
+// 讲师标签颜色
+#define kLecturerColor kColor(0xB395EF)
+
+// 学生标签颜色
+#define kStudentColor kColor(0x6CD9A3)
+
+//#define kJGT @"http://192.168.1.128:8080/jgt"
+//#define kJGTGetImage @"http://192.168.1.128:8080/jgt/downLoad/img?objKey="
+//#define kJGTGetImage @"http://47.94.153.45:8080/jgt/downLoad/img?objKey="
+//#define kJGT @"http://47.94.153.45:8080/jgt"
+#define kJGT @"http://489536564.iok.la:19041/jgt"
+#define kJGTGetImage @"http://489536564.iok.la:19041/jgt/downLoad/img?objKey="
+
+
 #define kUShareAppkey @"59af5e3365b6d646df000ad9"
 
 // 登录
@@ -120,6 +132,10 @@
 #define kIsIndentify @"isIndentify"
 #define kId @"id"
 #define kIdNumber @"idNumber"
+#define kRealName @"realName"
+#define kUserName @"userName"
+#define kIMAccId @"imaccid"
+#define kIMToken @"imtoken"
 
 // NSUserDefaults
 #define kToken  @"token"

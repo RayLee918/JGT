@@ -10,6 +10,12 @@
 
 @interface CLTool : NSObject
 
+// 隐藏导航栏, 设置背景为白色, 设置返回按钮标题为空
++ (void)globalSetting:(UIViewController *)vc
+isNavigationBarHidden:(BOOL)yesOrNo
+      backgroundColor:(UIColor *)color
+                title:(NSString *)title;
+
 // 网络请求返回数据判断
 + (BOOL)isHaveData:(id)obj;
 

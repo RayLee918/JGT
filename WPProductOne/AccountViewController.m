@@ -19,12 +19,12 @@
 #import "ChangePasswordViewController.h"
 #import "RegisterViewController.h"
 #import "WithDrawViewController.h"
+#import "TeamViewController.h"
 
 @interface AccountViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 {
-    NSArray * _dataSource1;
-    NSArray * _dataSource2;
+    NSArray * _dataSource;
     NSString * _isTeacher;
     UIView * _loginView;
     
@@ -69,13 +69,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
-    _dataSource1 = @[@"我的订单", @"帐单明细", @"银行卡管理"];
-    _dataSource2 = @[@"我的订单", @"帐单明细", @"银行卡管理"];
-//    _dataSource2 = @[@"我的消息", @"资金提现", @"银行卡管理"];
-//    _isTeacher = [[NSUserDefaults standardUserDefaults] objectForKey:kUser][kIsLecturer];
-//    _isTeacher = @"0";
+
+    _isTeacher = [[NSUserDefaults standardUserDefaults] objectForKey:kUser][kIsLecturer];
+    _isTeacher = @"1";
     NSLog(@"isTeacher - %@", _isTeacher);
+    if ([_isTeacher isEqualToString:@"1"]) {
+        _dataSource = @[@"我的订单", @"帐单明细", @"银行卡管理", @"我的讨论组"];
+    } else {
+        _dataSource = @[@"我的订单", @"帐单明细", @"银行卡管理", @"我的讨论组"];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -327,13 +329,13 @@
     _loginView.backgroundColor = kWhiteColor;
     
     UIImageView * imageView = [UIImageView new];
-    imageView.frame = CGRectMake((kScreentWidth - 75) / 2, 40, 75, 75);
+    imageView.frame = CGRectMake((kScreentWidth - 75) / 2, 20, 75, 75);
     [_loginView addSubview:imageView];
     imageView.image = [UIImage imageNamed:@"default_head.png"];
     
     // 帐号
     UILabel * nameLabel = [UILabel new];
-    nameLabel.frame = CGRectMake(0, 75 + 80, 96, 48);
+    nameLabel.frame = CGRectMake(0, 75 + 20, 96, 48);
     [_loginView addSubview:nameLabel];
     nameLabel.textColor = kColor(0x1F1F1F);
     nameLabel.font = [UIFont systemFontOfSize:15];
@@ -349,7 +351,7 @@
     UIView * line1 = [UIView new];
     line1.frame = CGRectMake(0, CGRectGetMaxY(nameLabel.frame), kScreentWidth, 1);
     [_loginView addSubview:line1];
-    line1.backgroundColor = kColor(0xFFFFFF);
+    line1.backgroundColor = kLineColor;
     
     // 密码
     UILabel * pwdLabel = [UILabel new];
@@ -375,11 +377,11 @@
     UIView * line2 = [UIView new];
     line2.frame = CGRectMake(0, CGRectGetMaxY(pwdLabel.frame), kScreentWidth, 1);
     [_loginView addSubview:line2];
-    line2.backgroundColor = kColor(0xFFFFFF);
+    line2.backgroundColor = kLineColor;
 
     // 登录
     UIButton * loginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    loginBtn.frame = CGRectMake(30, CGRectGetMaxY(line2.frame) + 48, kScreentWidth - 60, 44);
+    loginBtn.frame = CGRectMake(30, CGRectGetMaxY(line2.frame) + 12, kScreentWidth - 60, 44);
     [_loginView addSubview:loginBtn];
     [CLTool gradualBackgroundColor:loginBtn];
     [loginBtn setTitle:@"登录" forState:UIControlStateNormal];
@@ -388,7 +390,7 @@
     
     // 忘记密码
     UIButton * forgetPwdBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    forgetPwdBtn.frame = CGRectMake(30, CGRectGetMaxY(loginBtn.frame) + 20, (kScreentWidth - 60) / 2, 44);
+    forgetPwdBtn.frame = CGRectMake(30, CGRectGetMaxY(loginBtn.frame) + 12, (kScreentWidth - 60) / 2, 44);
     [_loginView addSubview:forgetPwdBtn];
     [forgetPwdBtn setTitleColor:kColor(0x59739B) forState:UIControlStateNormal];
     [forgetPwdBtn setTitle:@"忘记密码" forState:UIControlStateNormal];
@@ -397,7 +399,7 @@
     
     // 快速注册
     UIButton * registerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    registerBtn.frame = CGRectMake(CGRectGetMaxX(forgetPwdBtn.frame), CGRectGetMaxY(loginBtn.frame) + 20, (kScreentWidth - 60) / 2, 44);
+    registerBtn.frame = CGRectMake(CGRectGetMaxX(forgetPwdBtn.frame), CGRectGetMaxY(loginBtn.frame) + 12, (kScreentWidth - 60) / 2, 44);
     [_loginView addSubview:registerBtn];
     [registerBtn setTitleColor:kColor(0x59739B) forState:UIControlStateNormal];
     [registerBtn setTitle:@"快速注册" forState:UIControlStateNormal];
@@ -406,19 +408,18 @@
     
     // QQ快速登录
     UIButton * qqLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    qqLoginBtn.frame = CGRectMake(kScreentWidth / 2 - 10 - 44, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 44, 44);
+//    qqLoginBtn.frame = CGRectMake(kScreentWidth / 2 - 10 - 44, kScreentHeight - kMargin64 - kTabbarHeight - 10 - 44, 44, 44);
+    qqLoginBtn.frame = CGRectMake((kScreentWidth - 44) / 2, kScreentHeight - kMargin64 - kTabbarHeight - 10 - 44, 44, 44);
     [_loginView addSubview:qqLoginBtn];
     [qqLoginBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
-//    [qqLoginBtn setTitle:@"QQ登录" forState:UIControlStateNormal];
     [qqLoginBtn setBackgroundImage:kImageNamed(@"login_fast_qq.png") forState:UIControlStateNormal];
     [qqLoginBtn addTarget:self action:@selector(qqLoginBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
     // 微信快速登录
     UIButton * wxLoginBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    wxLoginBtn.frame = CGRectMake(kScreentWidth / 2 + 10, kScreentHeight - kMargin64 - kTabbarHeight - 20 - 44, 44, 44);
-    [_loginView addSubview:wxLoginBtn];
+    wxLoginBtn.frame = CGRectMake(kScreentWidth / 2 + 10, kScreentHeight - kMargin64 - kTabbarHeight - 10 - 44, 44, 44);
+//    [_loginView addSubview:wxLoginBtn];
     [wxLoginBtn setTitleColor:kGlobalColor forState:UIControlStateNormal];
-//    [wxLoginBtn setTitle:@"微信登录" forState:UIControlStateNormal];
     [wxLoginBtn setBackgroundImage:kImageNamed(@"login_fast_weixin.png") forState:UIControlStateNormal];
     [wxLoginBtn addTarget:self action:@selector(wxLoginBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -466,41 +467,13 @@
                             
                             NSDictionary * dic = [responseObject objectForKey:@"data"];
                             
-                            // 是否实名认证
-                            NSString * isIndentify = @"";
-                            if ([dic[kUser][kIsIndentify] respondsToSelector:@selector(isEqualToString:)]) {
-                                isIndentify = dic[kUser][kIsIndentify];
-                            }
-                            
-                            NSString * idNumber = @"";
-                            if ([dic[kUser][kIdNumber] respondsToSelector:@selector(isEqualToString:)]) {
-                                idNumber = dic[kUser][kIdNumber];
-                            }
-                            
-                            _userInfo = @{kToken:dic[kToken],
-                                          kHeadPic:dic[kUser][kHeadPic],
-                                          kNickName:dic[kUser][kNickName],
-                                          kPhone:dic[kUser][kPhone],
-                                          kSubscriptionNum:dic[kSubscriptionNum],
-                                          KAttentionNum:dic[KAttentionNum],
-                                          kUserID:dic[kUser][kId],
-                                          kIsLecturer:_isTeacher,
-                                          kIsIndentify:isIndentify,
-                                          kIdNumber:idNumber
-                                          };
-                            
-                            // 保存到本地
-                            [[NSUserDefaults standardUserDefaults] setValue:_userInfo forKey:kUser];
-                            NSLog(@"account - %@", _userInfo);
+                            // 个人信息持久化
+                            [self savePersonInfo:dic];
                             
                             // 清空登录信息
                             _nameTF.text = @"";
                             _pwdTF.text = @"";
                             
-                            // 设置个人信息
-#pragma mark - 要删除的
-                            _isTeacher = @"0";
-                            [self setPersonInfo:_userInfo];
                             [_tableView reloadData];
                             _settingBtn.hidden = NO;
                             [self.view sendSubviewToBack:_loginView];
@@ -518,6 +491,69 @@
     } else {
         [self showAlert:@"用户名不能为空"];
     }
+}
+
+#pragma mark - 个人信息持久化
+- (void)savePersonInfo:(NSDictionary *)dic {
+    
+    // 手机号
+    NSString * phone = @"";
+    if ([dic[kUser][kPhone] respondsToSelector:@selector(isEqualToString:)]) {
+        phone = dic[kUser][kPhone];
+    }
+    
+    // 是否实名认证
+    NSString * isIndentify = @"";
+    if ([dic[kUser][kIsIndentify] respondsToSelector:@selector(isEqualToString:)]) {
+        isIndentify = dic[kUser][kIsIndentify];
+    }
+    
+    // 身份证号
+    NSString * idNumber = @"";
+    if ([dic[kUser][kIdNumber] respondsToSelector:@selector(isEqualToString:)]) {
+        idNumber = dic[kUser][kIdNumber];
+    }
+    
+    // 真实姓名
+    NSString * userName = @"";
+    if ([dic[kUser][kUserName] respondsToSelector:@selector(isEqualToString:)]) {
+        userName = dic[kUser][kUserName];
+    }
+    
+    // 云信帐户
+    NSString * imaccid = @"";
+    if ([dic[kUser][kIMAccId] respondsToSelector:@selector(isEqualToString:)]) {
+        imaccid = dic[kUser][kIMAccId];
+    }
+    
+    // 云信token
+    NSString * imtoken = @"";
+    if ([dic[kUser][kIMToken] respondsToSelector:@selector(isEqualToString:)]) {
+        imtoken = dic[kUser][kIMToken];
+    }
+    
+    NSLog(@"login - %@", dic);
+    _userInfo = @{kToken:dic[kToken],
+                  kHeadPic:dic[kUser][kHeadPic],
+                  kNickName:dic[kUser][kNickName],
+                  kPhone:phone,
+                  kSubscriptionNum:dic[kSubscriptionNum],
+                  KAttentionNum:dic[KAttentionNum],
+                  kUserID:dic[kUser][kId],
+                  kIsLecturer:_isTeacher,
+                  kIsIndentify:isIndentify,
+                  kUserName:userName,
+                  kIdNumber:idNumber,
+                  kIMAccId:imaccid,
+                  kIMToken:imtoken
+                  };
+    
+    // 保存到本地
+    [[NSUserDefaults standardUserDefaults] setValue:_userInfo forKey:kUser];
+    NSLog(@"account - %@", _userInfo);
+
+    // 更新个人信息
+    [self setPersonInfo:_userInfo];
 }
 
 #pragma mark - 设置用户信息
@@ -595,7 +631,6 @@
                     
                     // 向服务器发送数据成功, 将信息缓存到本地
                     if ([[responseObject objectForKey:@"status"] integerValue] == 10) {
-                        
                         _isTeacher = @"0";
                     } else if ([[responseObject objectForKey:@"status"] integerValue] == 11) {
                         _isTeacher = @"1";
@@ -608,38 +643,8 @@
                         
                         NSDictionary * dic = [responseObject objectForKey:kData];
                         
-                        // 手机号
-                        NSString * phone = @"";
-                        if ([dic[kUser][kPhone] isEqual:[NSNull null]]) {
-                            
-                        } else {
-                            phone = dic[kUser][kPhone];
-                        }
-                        // 是否实名认证
-                        NSString * isIndentify = @"";
-                        if ([isIndentify respondsToSelector:@selector(isEqualToString:)]) {
-                            isIndentify = dic[kUser][kIsIndentify];
-                        }
-                        
-                        NSString * idNumber = @"";
-                        if ([idNumber respondsToSelector:@selector(isEqualToString:)]) {
-                            idNumber = dic[kUser][kIdNumber];
-                        }
-                        
-                        _userInfo = @{kToken:dic[kToken],
-                                      kHeadPic:dic[kUser][kHeadPic],
-                                      kNickName:dic[kUser][kNickName],
-                                      kPhone:dic[kUser][kPhone],
-                                      kSubscriptionNum:dic[kSubscriptionNum],
-                                      KAttentionNum:dic[KAttentionNum],
-                                      kUserID:dic[kUser][kId],
-                                      kIsLecturer:_isTeacher,
-                                      kIsIndentify:isIndentify,
-                                      kIdNumber:idNumber
-                                      };
-                        
-                        // 存储到本地
-                        [[NSUserDefaults standardUserDefaults] setValue:_userInfo forKey:kUser];
+                        // 个人信息持久化
+                        [self savePersonInfo:dic];
                         
                         // 更新界面
                         [_tableView reloadData];
@@ -787,9 +792,9 @@
     [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kUser];
 }
 
-#pragma mark - tableView
+#pragma mark - UITableViewDataSource UITableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _dataSource1.count;
+    return _dataSource.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -803,12 +808,9 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
     }
-    if ([_isTeacher isEqualToString:@"1"]) {
-        cell.textLabel.text = _dataSource2[indexPath.row];
-    }
-    else  {
-        cell.textLabel.text = _dataSource1[indexPath.row];
-    }
+    
+    cell.textLabel.text = _dataSource[indexPath.row];
+    
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     return cell;
@@ -822,23 +824,17 @@
         MsgViewController * msgVC = [[MsgViewController alloc] init];
         [self.navigationController pushViewController:msgVC animated:YES];
     } else if (indexPath.row == 1) {
-//        if ([_isTeacher isEqualToString:@"1"]) {
-//            WithDrawViewController * withDrawVC = [WithDrawViewController new];
-//            [self.navigationController pushViewController:withDrawVC animated:YES];
-//        }
-//        else {
-//            BillViewController * billVC = [BillViewController new];
-//            [self.navigationController pushViewController:billVC animated:YES];
-//        }
         BillViewController * billVC = [BillViewController new];
         [self.navigationController pushViewController:billVC animated:YES];
     } else if (indexPath.row == 2) {
         CardViewController * cardVC = [CardViewController new];
         [self.navigationController pushViewController:cardVC animated:YES];
-    }
-    else {
-        CourseViewController * courseVC = [CourseViewController new];
-        [self.navigationController pushViewController:courseVC animated:YES];
+    } else if (indexPath.row == 3) {
+        TeamViewController * teamVC = [TeamViewController new];
+        [self.navigationController pushViewController:teamVC animated:YES];
+    } else {
+        WithDrawViewController * withDrawVC = [WithDrawViewController new];
+        [self.navigationController pushViewController:withDrawVC animated:YES];
     }
 }
 

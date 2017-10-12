@@ -107,6 +107,7 @@
     
 }
 
+/*
 - (void)initBuyView1 {
     
     _buyView1 = [UIView new];
@@ -195,11 +196,19 @@
     moneyLabel2.textColor = kGlobalColor;
     _moneyLabel2 = moneyLabel2;
 }
+*/
 
+#pragma mark - 立即购买2
 - (void)initBuyViwe2 {
     // 第二个购买页面
     _buyView2 = [UIView new];
+    
+    // 微信, 支付宝支付
     CGFloat height2 = 44 * 5;
+    
+    // 只有支付宝支付
+    height2 = 44 * 4;
+    
     _buyView2.frame = CGRectMake(0, CGRectGetMaxY(_backgroundBtn.frame) - height2 - kMargin64 - kTabbarHeight, kScreentWidth, height2);
     _buyView2.backgroundColor = kWhiteColor;
     [_backgroundBtn addSubview:_buyView2];
@@ -232,6 +241,7 @@
     [_buyView2 addSubview:lineView2];
     lineView2.backgroundColor = kLineColor;
     
+    /*
     // 微信支付
     UIImageView * weixinImageV = [UIImageView new];
     weixinImageV.frame = CGRectMake(7, CGRectGetMaxY(titleLabel2.frame) + 7, 30, 30);
@@ -262,7 +272,6 @@
     UIImageView * zhifubaoImageV = [UIImageView new];
     zhifubaoImageV.frame = CGRectMake(7, CGRectGetMaxY(weixinLabel.frame) + 7, 30, 30);
     [_buyView2 addSubview:zhifubaoImageV];
-//    zhifubaoImageV.backgroundColor = kGlobalColor;
     zhifubaoImageV.image = kImageNamed(@"zhifubao.png");
     
     UILabel * zhifubaoLabel = [UILabel new];
@@ -277,7 +286,28 @@
     [zhifubaoBtn addTarget:self action:@selector(zhifubaoBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     zhifubaoBtn.layer.borderColor = kGlobalColor.CGColor;
     _zhifubaoBtn = zhifubaoBtn;
+    */
     
+    // 支付宝支付
+    UIImageView * zhifubaoImageV = [UIImageView new];
+    zhifubaoImageV.frame = CGRectMake(7, CGRectGetMaxY(titleLabel2.frame) + 7, 30, 30);
+    [_buyView2 addSubview:zhifubaoImageV];
+    zhifubaoImageV.image = kImageNamed(@"zhifubao.png");
+    
+    UILabel * zhifubaoLabel = [UILabel new];
+    zhifubaoLabel.frame = CGRectMake(54, CGRectGetMaxY(titleLabel2.frame), kScreentWidth - 88, 44);
+    [_buyView2 addSubview:zhifubaoLabel];
+    zhifubaoLabel.font = [UIFont systemFontOfSize:12];
+    zhifubaoLabel.text = @"支付宝支付";
+    
+    UIButton * zhifubaoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    zhifubaoBtn.frame = CGRectMake(0, CGRectGetMinY(zhifubaoLabel.frame), kScreentWidth, 44);
+    [_buyView2 addSubview:zhifubaoBtn];
+    [zhifubaoBtn addTarget:self action:@selector(zhifubaoBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    zhifubaoBtn.layer.borderColor = kGlobalColor.CGColor;
+    _zhifubaoBtn = zhifubaoBtn;
+    
+    // 实付金额
     UILabel * moneyLabel3 = [UILabel new];
     moneyLabel3.frame = CGRectMake(20, CGRectGetMaxY(zhifubaoLabel.frame), kScreentWidth - 20, 44);
     [_buyView2 addSubview:moneyLabel3];

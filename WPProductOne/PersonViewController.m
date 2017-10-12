@@ -138,9 +138,9 @@
     [submitBtn addTarget:self action:@selector(submitBtnClick) forControlEvents:UIControlEventTouchUpInside];
     
     NSLog(@"userInfo - %@", _userInfo);
-    if ([_userInfo[kIsIndentify] isEqualToString:@""]) {
+    if ([_userInfo[kIsIndentify] isEqualToString:@"1"]) {
         label.text = @"您已通过实名认证";
-        nameTF.text = _userInfo[@"realName"];
+        nameTF.text = _userInfo[kUserName];
         nameTF.userInteractionEnabled = NO;
         numberTF.text = _userInfo[kIdNumber];
         numberTF.userInteractionEnabled = NO;

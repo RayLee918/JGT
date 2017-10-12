@@ -22,7 +22,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+    self.title = self.courseName;
 }
 
 #pragma mark - 下载的文档处理

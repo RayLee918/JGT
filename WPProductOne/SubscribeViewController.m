@@ -126,6 +126,8 @@
     [mStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"PingFangSC-Semibold" size:12.5] range:NSMakeRange(str.length - 5, 5)];
     cell.secondLabel.attributedText = mStr;
     
+    cell.orderLabel.text = @"阅读文档";
+    
     // 立即订购
 //    [cell.orderBtn setTitle:@"观看文档" forState:UIControlStateNormal];
 //    [cell.orderBtn addTarget:self action:@selector(loadDocument:) forControlEvents:UIControlEventTouchUpInside];
@@ -138,9 +140,13 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     ReadViewController * readVC = [ReadViewController new];
     NSDictionary * dic = _dataSource[indexPath.row];
-    readVC.courseDoc = [NSString stringWithFormat:@"%@/downLoad/download?fileid=%@", kJGT, dic[@"courseDoc"]];
-    [self.navigationController pushViewController:readVC animated:YES];
-}
+    if (![dic[@"courseDoc"] isEqual:[NSNull null]]) {
+        readVC.courseName = dic[@"courseName"];
+        readVC.courseDoc = [NSString stringWithFormat:@"%@/downLoad/download?fileid=%@", kJGT, dic[@"courseDoc"]];
+        [self.navigationController pushViewController:readVC animated:YES];
+    } else {
+        [CLTool showAlert:@"还没有上传该课程" target:self];
+    }}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
