@@ -79,7 +79,7 @@
 #define kColor(s) [UIColor colorWithRed:(((s & 0xFF0000) >> 16))/255.0 green:(((s &0xFF00) >>8))/255.0 blue:((s &0xFF))/255.0 alpha:1.0]
 
 // 全局颜色
-#define kGlobalColor [UIColor colorWithRed:(((0xFF4F53 & 0xFF0000) >> 16))/255.0 green:(((0xFF4F53 &0xFF00) >>8))/255.0 blue:((0xFF4F53 &0xFF))/255.0 alpha:1.0]
+#define kGlobalColor [UIColor colorWithRed:181/255.0 green:0/255.0 blue:15/255.0 alpha:1]
 
 // 分割线颜色
 #define kLineColor [UIColor colorWithRed:(((0xEFEFEF & 0xFF0000) >> 16))/255.0 green:(((0xEFEFEF &0xFF00) >>8))/255.0 blue:((0xEFEFEF &0xFF))/255.0 alpha:1.0]
@@ -97,8 +97,8 @@
 //#define kJGTGetImage @"http://192.168.1.128:8080/jgt/downLoad/img?objKey="
 //#define kJGTGetImage @"http://47.94.153.45:8080/jgt/downLoad/img?objKey="
 //#define kJGT @"http://47.94.153.45:8080/jgt"
-#define kJGT @"http://489536564.iok.la:19041/jgt"
-#define kJGTGetImage @"http://489536564.iok.la:19041/jgt/downLoad/img?objKey="
+#define kJGT @"http://47.93.161.92:8080/jgt"
+#define kJGTGetImage @"http://47.93.161.92:8080/jgt/downLoad/img?objKey="
 
 
 #define kUShareAppkey @"59af5e3365b6d646df000ad9"

@@ -43,8 +43,8 @@
     
     // 初始三个数据源
     [self getOrderData];
-//    [self getMsgData];
-//    [self getAttentionData];
+    [self getMsgData];
+    [self getAttentionData];
 }
 
 #pragma mark - 请求我的订单数据
@@ -246,7 +246,7 @@
         }
         
         NSDictionary * dic = _orderDataSource[indexPath.row];
-        NSString * imgStr = [NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"headPic"]];
+        NSString * imgStr = [NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"lectPic"]];
         [cell.icon setImageWithURL:[NSURL URLWithString:imgStr]];
         
         if (![dic[@"lectName"] isEqual:[NSNull null]]) {
@@ -290,7 +290,7 @@
             cell = [[FollowCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifer];
         }
         NSDictionary * dic = _attentionDataSource[indexPath.row];
-        [cell.icon setImageWithURL:[NSURL URLWithString:dic[@"lectPic"]]];
+        [cell.icon setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"lectPic"]]]];
         cell.nickNameLbl.text = dic[@"lectName"];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;

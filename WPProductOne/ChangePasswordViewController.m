@@ -89,6 +89,7 @@
     // 获取验证码按钮
     UIButton * verifyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     verifyBtn.frame = CGRectMake(kScreentWidth/2 + (kScreentWidth/2-135.5)/2, CGRectGetMaxY(lineView.frame) + (48-37.5)/2, 135.5, 37.5);
+    [CLTool gradualBackgroundColor:verifyTF];
     [self.view addSubview:verifyBtn];
     verifyBtn.backgroundColor = kColor(0xFF4F53);
     [verifyBtn addTarget:self action:@selector(verifyBtnClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -121,7 +122,7 @@
     UIButton * submitBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     submitBtn.frame = CGRectMake((kScreentWidth - 135.5) / 2, CGRectGetMaxY(lineView3.frame) +  20, 135.5, 37.5);
     [self.view addSubview:submitBtn];
-    submitBtn.backgroundColor = kColor(0xFF4F53);
+    [CLTool gradualBackgroundColor:submitBtn];
     [submitBtn addTarget:self action:@selector(submitBtnClick) forControlEvents:UIControlEventTouchUpInside];
     [submitBtn setTitle:@"完成提交" forState:UIControlStateNormal];
     submitBtn.layer.cornerRadius = 5;

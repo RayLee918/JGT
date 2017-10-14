@@ -54,7 +54,7 @@
 
 - (void)initView {
     
-    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kScreentWidth, kScreentHeight - kBatteryHeight - kTabbarHeight - kNavgationBarHeight)];
+    UIWebView * webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kScreentWidth, kScreentHeight - kBatteryHeight - kTabbarHeight - kNavgationBarHeight - 44)];
     [self.view addSubview:webView];
     webView.backgroundColor = kWhiteColor;
     webView.opaque = NO;
@@ -412,6 +412,7 @@
     } else if ([_payMethod isEqualToString:@"zhifubao"]) {
         _backgroundBtn.hidden = YES;
         NSLog(@"zhifubao zhifu");
+//        [CLTool showAlert:@"课程购买成功, 请去[个人中心] -> [订阅] -> 阅读文档" target:self];
         [self payMethod:_payMethod];
         
     } else {
@@ -458,20 +459,7 @@
                         // 支付成功
                         if ([resultDic[@"resultStatus"] isEqualToString:@"9000"]) {
                             NSLog(@"zhifubao - buy - 支付成功");
-                            [CLTool showAlert:@"课程购买成功" target:self];
-//                            NSString * result = resultDic[@"result"];
-//                            
-//                            NSData *jsonData = [result dataUsingEncoding:NSUTF8StringEncoding];
-//                            NSError *err;
-//                            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers  error:&err];
-//                            
-//                            NSString * str = [NSString stringWithFormat:@"%@/order/payOrder", kJGT];
-//                            NSDictionary * param = @{@"orderId":dic[@"alipay_trade_app_pay_response"][@"out_trade_no"], @"payType":@"zhifubao"};
-//                            [[AFHTTPSessionManager manager] GET:str parameters:param progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//                                NSLog(@"zhifubao - 通知服务器端成功");
-//                            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//                                NSLog(@"zhifubao - 通知服务器端失败");
-//                            }];
+                            [CLTool showAlert:@"课程购买成功, 请去[个人中心] -> [订阅] -> 阅读文档" target:self];
                         } else {
                             NSLog(@"zhifubao - buy - 支付失败");
                             [CLTool showAlert:@"支付失败" target:self];

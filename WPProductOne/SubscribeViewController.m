@@ -22,7 +22,7 @@
 
 #pragma mark - 获取已订阅课程
 - (void)getSubscribeData {
-    NSString * urlStr = [NSString stringWithFormat:@"%@/center/user/getSubscriptionList", kJGT];
+    NSString * urlStr = [NSString stringWithFormat:@"%@/center/user/orderList", kJGT];
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     [manager GET:urlStr parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"subscribe - %@", responseObject);
@@ -107,9 +107,7 @@
     
     // 设置cell的属性
     NSDictionary * dic = _dataSource[indexPath.row];
-    NSString * imgStr = [NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"headPic"]];
-    [cell.icon setImageWithURL:[NSURL URLWithString:imgStr]];
-
+    [cell.icon setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"lectPic"]]]];
     cell.nickNameLbl.text = dic[@"lectName"];
     NSString * overStr = [NSString stringWithFormat:@"%@ - 已完结", _dataSource[indexPath.row][@"courseName"]];
     cell.contentLbl.text = overStr;

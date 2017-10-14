@@ -83,6 +83,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    NSLog(@"account - viewWillAppear");
     _pwdTF.text = @"";
     
     // 隐藏导航栏
@@ -94,6 +95,21 @@
     dispatch_once(&onceToken, ^{
         [self initView];
     });
+
+    // 获取个人信息
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
+        
+        // ------------------- 打开程序, 传给服务器端Token -------------------
+        NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
+        NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
+        AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+        [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSLog(@"token - %@", [responseObject objectForKey:kData]);
+            [self savePersonInfo:[responseObject objectForKey:kData]];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        }];
+    }
 
 }
 
@@ -294,7 +310,7 @@
     UILabel * versionLabel = [UILabel new];
     versionLabel.frame = CGRectMake(20, CGRectGetMaxY(lineView4.frame), kScreentWidth - 20 - 20, 48);
     [footerView addSubview:versionLabel];
-    versionLabel.text = @"1.2.66";
+    versionLabel.text = @"";
     versionLabel.font = [UIFont systemFontOfSize:12];
     versionLabel.textColor = kColor(0xB0B0B0);
     versionLabel.textAlignment = NSTextAlignmentRight;
@@ -387,6 +403,8 @@
     [loginBtn setTitle:@"登录" forState:UIControlStateNormal];
     loginBtn.titleLabel.font = [UIFont systemFontOfSize:18];
     [loginBtn addTarget:self action:@selector(loginBtn:) forControlEvents:UIControlEventTouchUpInside];
+    loginBtn.layer.cornerRadius = 5;
+    loginBtn.layer.masksToBounds = YES;
     
     // 忘记密码
     UIButton * forgetPwdBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -436,12 +454,12 @@
     if (_nameTF.text.length >= 1) {
         if (_pwdTF.text.length >= 6) {
             [self.view endEditing:YES];
-            NSString * token = @"";
-            if ([[NSUserDefaults standardUserDefaults] valueForKey:kToken]) {
-                token = [[NSUserDefaults standardUserDefaults] valueForKey:kToken];
-            }
+//            NSString * token = @"";
+//            if ([[NSUserDefaults standardUserDefaults] valueForKey:kToken]) {
+//                token = [[NSUserDefaults standardUserDefaults] valueForKey:kToken];
+//            }
 
-            NSDictionary * params = @{@"nickName":_nameTF.text, @"password":_pwdTF.text, @"token":token, @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
+            NSDictionary * params = @{@"nickName":_nameTF.text, @"password":_pwdTF.text, @"token":@"", @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
             NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
             AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
             [manager GET:urlStr parameters:params progress:^(NSProgress * _Nonnull downloadProgress) {
@@ -531,8 +549,7 @@
     if ([dic[kUser][kIMToken] respondsToSelector:@selector(isEqualToString:)]) {
         imtoken = dic[kUser][kIMToken];
     }
-    
-    NSLog(@"login - %@", dic);
+
     _userInfo = @{kToken:dic[kToken],
                   kHeadPic:dic[kUser][kHeadPic],
                   kNickName:dic[kUser][kNickName],
@@ -789,7 +806,7 @@
         NSLog(@"endEdit --- %@", error);
     }];
     
-    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kUser];
+    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kUser];
 }
 
 #pragma mark - UITableViewDataSource UITableViewDelegate

@@ -90,7 +90,9 @@
 - (void)changeNavigation {
     // 更改导航主题
     UINavigationBar * bar = [UINavigationBar appearance];
-    bar.barTintColor = [UIColor colorWithPatternImage:kImageNamed(@"background_color_64.png")];
+//    bar.barTintColor = [UIColor colorWithPatternImage:kImageNamed(@"background_color_64.png")];
+    bar.barTintColor = [UIColor colorWithRed:181/255.0 green:0/255.0 blue:15/255.0 alpha:1];
+//    [bar setBackgroundImage:kImageNamed(@"background_color_64.png") forBarMetrics:UIBarMetricsCompact];
     bar.tintColor = kWhiteColor;
     bar.translucent = NO;
     [bar setTitleTextAttributes:@{NSForegroundColorAttributeName:kWhiteColor}];
@@ -100,11 +102,11 @@
     [bar setShadowImage:[UIImage new]];
 }
 
-#pragma mark - Token上传
+#pragma mark - Token上传 个人信息获取
 - (void)uploadToken {
-    // ------------------- 打开程序, 传给服务器端Token -------------------
     if ([[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken]) {
         
+        // ------------------- 打开程序, 传给服务器端Token -------------------
         NSDictionary * params = @{@"token":[[NSUserDefaults standardUserDefaults] valueForKey:kUser][kToken], @"mac":[[NSUserDefaults standardUserDefaults] valueForKey:@"device"]};
         NSString * urlStr = [NSString stringWithFormat:@"%@/regOrLog/login", kJGT];
         AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];

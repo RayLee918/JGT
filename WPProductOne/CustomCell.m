@@ -69,9 +69,9 @@
         
         
         // 简介
-        self.descLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.tagBtn1.frame) + 5,kScreentWidth - 93 - 100 - 25, 28)];
+        self.descLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMinX(self.nickNameLbl.frame), CGRectGetMaxY(self.tagBtn1.frame) + 3,kScreentWidth - 93 - 100 - 25, 30)];
         [self addSubview:self.descLbl];
-        self.descLbl.font = [UIFont systemFontOfSize:10];
+        self.descLbl.font = [UIFont systemFontOfSize:12];
         self.descLbl.textColor = kColor(0x4A4A4A);
         self.descLbl.numberOfLines = 0;
         
@@ -90,7 +90,7 @@
         CGFloat width = (kScreentWidth - 93)/3 - 25;
         
         self.followImageView = [[UIImageView alloc] init];
-        self.followImageView.frame = CGRectMake(12, (16 - 7.5)/2, 7.5, 7.5);
+        self.followImageView.frame = CGRectMake(12, (20 - 7.5)/2, 7.5, 7.5);
         [self.stateView addSubview:self.followImageView];
         self.followImageView.image = [UIImage imageNamed:@"follow.png"];
         
@@ -98,7 +98,7 @@
         self.followLabel.frame = CGRectMake(25, 0, width, self.stateView.frame.size.height);
         [self.stateView addSubview:self.followLabel];
         self.followLabel.textColor = kColor(0x9B9B9B);
-        self.followLabel.font = [UIFont systemFontOfSize:7.5];
+        self.followLabel.font = [UIFont systemFontOfSize:10];
         
         // 交易
         self.dealImageView = [[UIImageView alloc] init];
@@ -110,7 +110,7 @@
         self.dealLabel.frame = CGRectMake((kScreentWidth-93) / 3 + 25, 0, width, self.stateView.frame.size.height);
         [self.stateView addSubview:self.dealLabel];
         self.dealLabel.textColor = kColor(0x9B9B9B);
-        self.dealLabel.font = [UIFont systemFontOfSize:7.5];
+        self.dealLabel.font = [UIFont systemFontOfSize:10];
         
         // 下载
         self.downloadImageView = [[UIImageView alloc] init];
@@ -122,7 +122,7 @@
         self.downloadLabel.frame = CGRectMake((kScreentWidth-93) / 3 * 2 + 25, 0, width, self.stateView.frame.size.height);
         [self.stateView addSubview:self.downloadLabel];
         self.downloadLabel.textColor = kColor(0x9B9B9B);
-        self.downloadLabel.font = [UIFont systemFontOfSize:7.5];
+        self.downloadLabel.font = [UIFont systemFontOfSize:10];
     }
     return self;
 }

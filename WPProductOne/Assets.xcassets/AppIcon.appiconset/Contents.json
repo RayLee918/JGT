@@ -47,6 +47,12 @@
       "idiom" : "iphone",
       "filename" : "Group Copy 5@3x.png",
       "scale" : "3x"
+    },
+    {
+      "size" : "1024x1024",
+      "idiom" : "ios-marketing",
+      "filename" : "Group Copy 3.png",
+      "scale" : "1x"
     }
   ],
   "info" : {

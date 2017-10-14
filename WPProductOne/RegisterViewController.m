@@ -166,7 +166,9 @@
     subscribeBtn.titleLabel.font = [UIFont systemFontOfSize:15];
     [subscribeBtn setTitle:@"获取验证码" forState:UIControlStateNormal];
     [subscribeBtn addTarget:self action:@selector(subscribeBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    subscribeBtn.layer.cornerRadius = 10;
+    subscribeBtn.layer.cornerRadius = 5;
+    subscribeBtn.layer.masksToBounds = YES;
+
     
     UIView * line3 = [UIView new];
     line3.frame = CGRectMake(0, CGRectGetMaxY(subcribeTF.frame), kScreentWidth, 1);
@@ -238,6 +240,8 @@
     [registerBtn setTitle:@"注册" forState:UIControlStateNormal];
     registerBtn.titleLabel.font = [UIFont systemFontOfSize:18];
     [registerBtn addTarget:self action:@selector(registerBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    registerBtn.layer.cornerRadius = 5;
+    registerBtn.layer.masksToBounds = YES;
     
     // 备注
     UILabel * remarkLabel1 = [UILabel new];
@@ -288,11 +292,12 @@
 #pragma mark - 上传头像
 - (void)uploadImageBtnClick {
     UIAlertController * alert = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    
+
     // 从图库选取
     [alert addAction:[UIAlertAction actionWithTitle:@"从手机相册选取" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
         UIImagePickerController * imagePicker = [[UIImagePickerController alloc] init];
+//        [imagePicker.navigationBar setBackgroundColor:[UIColor blackColor]];
         imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         imagePicker.allowsEditing = YES;
         imagePicker.delegate = self;

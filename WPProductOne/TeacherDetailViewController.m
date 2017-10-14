@@ -74,7 +74,7 @@
                 [_overView reloadData];
             });
         } else {
-            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+//            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -98,7 +98,7 @@
                 [_dealView reloadData];
             });
         } else {
-            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
+//            [CLTool showAlert:[responseObject objectForKey:kMsg] target:self];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
     }];

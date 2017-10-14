@@ -37,6 +37,7 @@
     UITableView * _teacherTableView;
     NSArray * _homeDataSource;
     NSArray * _teacherDataSource;
+    NSMutableArray * _sortBtnArr;
     
     UIPageControl * _pageControl;
     UIPageControl * _secondPageControl;
@@ -79,6 +80,7 @@
     _moduleBtnArr = [NSMutableArray arrayWithCapacity:0];
     _moduleBtnTitleArr = [NSMutableArray arrayWithCapacity:0];
     _moduleBtnLabelArr = [NSMutableArray arrayWithCapacity:0];
+    _sortBtnArr = [NSMutableArray arrayWithCapacity:0];
     [self getHomeNewsData];
     [self getTeacherData];
     
@@ -127,8 +129,6 @@
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
 //        [CLTool showAlert:@"获取数据失败" target:self];
     }];
-//    _moduleBtnTitleArr = [NSMutableArray arrayWithArray:@[@"股票", @"基金", @"贵金属", @"外汇", @"分析", @"债券", @"顾问", @"更多", @"商品期货", @"股指期货"]];
-    
 }
 
 - (void)updateTitle {
@@ -379,6 +379,7 @@
         [sortAllBtn setTitle:titles[i] forState:UIControlStateNormal];
         [sortAllBtn addTarget:self action:@selector(sortBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         sortAllBtn.tag = 100 + i;
+        [_sortBtnArr addObject:sortAllBtn];
     }
     
     // 讲师展示列表
@@ -571,6 +572,14 @@
 
 #pragma mark - 四种排序按钮响应事件
 - (void)sortBtnClick:(UIButton *)sender {
+    for (UIButton * btn in _sortBtnArr) {
+        if (btn.tag == sender.tag) {
+            [btn setTitleColor:kGlobalColor forState:UIControlStateNormal];
+        } else {
+            [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        }
+    }
+    
     NSString * urlStr = [NSString stringWithFormat:@"%@/lecturer/findAll", kJGT];
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     [manager GET:urlStr parameters:@{@"type":[NSString stringWithFormat:@"%ld", sender.tag - 100]} progress:^(NSProgress * _Nonnull downloadProgress) {

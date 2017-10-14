@@ -32,6 +32,8 @@
         self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
         [self.contentView addSubview:self.icon];
         self.icon.image = kImageNamed(@"default_head.png");
+        self.icon.layer.cornerRadius = 20;
+        self.icon.layer.masksToBounds = YES;
         
         // 昵称
         self.nickNameLbl = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.icon.frame) + 15, CGRectGetMinY(self.icon.frame), kScreentWidth - 60 - 10, 40)];

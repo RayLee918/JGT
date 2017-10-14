@@ -26,6 +26,7 @@
     NSMutableArray * _tableViewArray;
     NSMutableArray * _moduleBtns;
     NSMutableArray * _dataSources;
+    NSMutableArray * _moduleLabels;
 }
 @end
 
@@ -97,6 +98,14 @@
     // 隐藏导航栏
     self.navigationController.navigationBar.hidden = YES;
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    // 模块按钮
+    NSInteger count = self.moduleBtnTitleArr.count;
+    for (int i = 0; i < count; i++) {
+        NSDictionary * dic = self.moduleBtnTitleArr[i];
+        UILabel * label = _moduleLabels[i];
+        label.text = dic[@"cateName"];
+    }
 }
 
 #pragma mark - 初始视图
@@ -137,6 +146,7 @@
         [self.view addSubview:label];
         label.font = [UIFont systemFontOfSize:15];
         [CLTool labelAlightLeftAndRight:label];
+        [_moduleLabels addObject:label];
         
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.frame = label.frame;
@@ -256,9 +266,9 @@
     
     if (arr.count >= 1) {
         NSDictionary * dic = arr[indexPath.row];
-    
-    // 设置cell的属性
-    [cell.icon setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"lectPic"]]]];
+        NSLog(@"custom - %@", dic);
+        // 设置cell的属性
+        [cell.icon setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kJGTGetImage, dic[@"lectPic"]]]];
         
         // 设置头像圆角
         CALayer * iconLayer = cell.icon.layer;
