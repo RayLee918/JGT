@@ -142,11 +142,11 @@
     [JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
     
     // ------------------- 初始化JPush代码 -------------------
-    NSString * advertisingId = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+//    NSString * advertisingId = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
     [JPUSHService setupWithOption:launchOptions appKey:kAppKeyJPush
                           channel:@"AppStore"
                  apsForProduction:YES
-            advertisingIdentifier:advertisingId];
+            advertisingIdentifier:nil];
 }
 
 #pragma mark - 微信支付回调
